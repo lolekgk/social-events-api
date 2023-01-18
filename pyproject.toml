@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "social-events-api"
 version = "0.1.0"
-description = ""
+description = "Create and manage events for group of friends"
 authors = ["Karol Gajda <karol.gajda97@gmail.com>"]
 readme = "README.md"
 packages = [{include = "social_events_api"}]
@@ -13,6 +13,8 @@ djangorestframework = "^3.14.0"
 django-debug-toolbar = "^3.8.1"
 celery = "^5.2.7"
 drf-spectacular = "^0.25.1"
+dj-database-url = "^1.2.0"
+mysqlclient = "^2.1.1"
 
 
 [tool.poetry.group.dev.dependencies]
