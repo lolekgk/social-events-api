@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+    mysql_db:
+        image: mysql:latest
+        container_name: mysql_db
+        restart: always
+        env_file:
+            - .env
+        environment:
+            MYSQL_USER: ${MYSQL_USERNAME}
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+        volumes:
+            - db_data:/var/lib/mysql
+            - /tmp/app/mysqld:/var/run/mysqld
+        ports:
+            - 3305:3306
+
+    phpmyadmin:
+        container_name: phpmyadmin
+        image: phpmyadmin:latest
+        restart: always
+        env_file:
+            - .env
+        environment:
+            PMA_HOST: mysql_db
+            PMA_USER: ${PMA_USER}
+            PMA_PASSWORD: ${PMA_PASSWORD}
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        ports:
+            - 8080:80
+
+    web:
+        build: .
+        command: python manage.py runserver 0.0.0.0:8000
+        ports:
+            - 8000:8000
+        volumes:
+            - .:/app
+            - /tmp/app/mysqld:/var/run/mysqld
+        depends_on:
+            - mysql_db
+        restart: on-failure
+
+volumes:
+    db_data:
+        driver: local
