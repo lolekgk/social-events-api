@@ -1,36 +1,34 @@
 version: '3.8'
 
 services:
-    mysql_db:
-        image: mysql:latest
-        container_name: mysql_db
+    postgres_db:
+        image: postgres:15.1
+        container_name: postgres_db
         restart: on-failure
         env_file:
             - .env
         environment:
-            MYSQL_USER: ${MYSQL_USERNAME}
-            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            POSTGRES_USER: ${POSTGRES_USERNAME}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+            POSTGRES_DB: ${POSTGRES_DB}
         volumes:
-            - db_data:/var/lib/mysql
-            - /tmp/app/mysqld:/var/run/mysqld
+            - db_data:/var/lib/posgresql/data
         ports:
-            - 3305:3306
+            - 5432:5423
 
-    phpmyadmin:
-        container_name: phpmyadmin
-        image: phpmyadmin:latest
+    pgadmin:
+        container_name: pgadmin
+        image: dpage/pgadmin4:6
         restart: unless-stopped
         env_file:
             - .env
         environment:
-            PMA_HOST: mysql_db
-            PMA_USER: ${PMA_USER}
-            PMA_PASSWORD: ${PMA_PASSWORD}
-            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+            PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
         depends_on:
-            - mysql_db
+            - postgres_db
+        volumes:
+            - pgadmin-data:/var/lib/pgadmin
         ports:
             - 8080:80
 
@@ -40,15 +38,17 @@ services:
         ports:
             - 8000:8000
         environment:
-            - WAIT_HOSTS=mysql_db:3305
+            - WAIT_HOSTS=postgres_db
+            - DATABASE_URL=postgres://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@postgres_db/${POSTGRES_DB}
         volumes:
             - .:/app
-            - /tmp/app/mysqld:/var/run/mysqld
         depends_on:
-            - mysql_db
-            - phpmyadmin
+            - postgres_db
+            - pgadmin
         restart: on-failure
 
 volumes:
     db_data:
+        driver: local
+    pgadmin-data:
         driver: local

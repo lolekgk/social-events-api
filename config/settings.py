@@ -14,9 +14,7 @@ import os
 from pathlib import Path
 
 import dj_database_url
-from dotenv import load_dotenv
 
-load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,6 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+# TODO move it to .env file
 SECRET_KEY = (
     "django-insecure-mni=s!r2q__g66qkf_*1-mjqghky@n%8_e3tr^&5huc648pcd2"
 )
@@ -44,8 +43,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "rest_framework",
     # third party apps
+    "rest_framework",
     "drf_spectacular",
     # local apps
     "events",

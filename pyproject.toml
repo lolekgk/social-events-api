@@ -14,8 +14,8 @@ django-debug-toolbar = "^3.8.1"
 celery = "^5.2.7"
 drf-spectacular = "^0.25.1"
 dj-database-url = "^1.2.0"
-mysqlclient = "^2.1.1"
 python-dotenv = "^0.21.0"
+psycopg2 = "^2.9.5"
 
 
 [tool.poetry.group.dev.dependencies]
