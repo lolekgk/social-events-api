@@ -40,6 +40,8 @@ services:
         environment:
             - WAIT_HOSTS=postgres_db
             - DATABASE_URL=postgres://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@postgres_db/${POSTGRES_DB}
+            - DEBUG=${DEBUG}
+            - SECRET_KEY=${SECRET_KEY}
         volumes:
             - .:/app
         depends_on:
