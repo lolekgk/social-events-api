@@ -10,9 +10,10 @@ RUN poetry export -f requirements.txt --output requirements.txt --without-hashes
 
 FROM python:3.11.1-slim-buster as app-stage
 
-ENV PYTHONUNBUFFERED 1 \
-PYTHONFAULTHANDLER 1 \
-PIP_DISABLE_PIP_VERSION_CHECK 1
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONFAULTHANDLER=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    APP_USER=app_user
 
 WORKDIR /app
 
@@ -24,7 +25,8 @@ RUN apt-get update \
   # cleaning up unused files
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/* \
-  && pip install --no-cache-dir --upgrade -r /app/requirements.txt
+  && pip install --no-cache-dir --upgrade -r /app/requirements.txt \
+  && useradd -rm -d /home/${APP_USER} -s /bin/bash -g root -G sudo -u 1001 ${APP_USER}
 
 COPY . /app/
 
@@ -33,5 +35,7 @@ EXPOSE 8000
 ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.7.3/wait /wait
 
 RUN chmod +x /wait
+
+USER ${APP_USER}
 
 CMD /wait
