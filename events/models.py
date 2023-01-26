@@ -9,7 +9,6 @@ class Location(models.Model):
     street = models.CharField(max_length=75)
     street_number = models.CharField(max_length=10)
     zip_code = models.CharField(max_length=10, blank=True, null=True)
-    # added_by? foreign key to the user
 
     def __str__(self) -> str:
         return self.name
@@ -22,9 +21,14 @@ class Event(models.Model):
         CANCELLED = 'C'
         ENDED = 'E'
 
-    # access? it's open or we need to have an invitation
+    class EventAccess(models.TextChoices):
+        OPEN = 'O'
+        INVITATION = 'I'
 
     name = models.CharField(max_length=255)  # should it be unique?
+    access = models.CharField(
+        choices=EventAccess.choices, max_length=1, default=EventAccess.OPEN
+    )
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     # group ? foreign key to the group of friends(users)
@@ -36,7 +40,8 @@ class Event(models.Model):
         choices=EventStatus.choices, max_length=1, default=EventStatus.PLANNED
     )
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
-    # recurring event
+    # recurring events
+    # https://django-recurrence.readthedocs.io/en/latest/index.html
 
     def __str__(self) -> str:
         return self.name
@@ -49,3 +54,4 @@ class Event(models.Model):
 
 
 # Create separate app for the Users?
+# Group -> with manytomanyfield of members(Users)
