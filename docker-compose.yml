@@ -12,7 +12,7 @@ services:
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
             POSTGRES_DB: ${POSTGRES_DB}
         volumes:
-            - db_data:/var/lib/posgresql/data
+            - db_data:/var/lib/postgresql/data
         ports:
             - 5432:5423
 
@@ -37,6 +37,8 @@ services:
         command: python manage.py runserver 0.0.0.0:8000
         ports:
             - 8000:8000
+        env_file:
+            - .env
         environment:
             - WAIT_HOSTS=postgres_db
             - DATABASE_URL=postgres://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@postgres_db/${POSTGRES_DB}
