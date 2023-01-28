@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 
@@ -31,17 +32,22 @@ class Event(models.Model):
     )
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
-    # group ? foreign key to the group of friends(users)
-    # organisers -> manytomany field to users
-    # participants -> same
+    organizers = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, related_name='events_organizer'
+    )
+    participants = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, related_name='events_participant'
+    )
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     status = models.CharField(
         choices=EventStatus.choices, max_length=1, default=EventStatus.PLANNED
     )
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
+    banner = models.ImageField(upload_to='event-banner-images', blank=True)
     # recurring events
     # https://django-recurrence.readthedocs.io/en/latest/index.html
+    # group ? foreign key to the group of friends(users)
 
     def __str__(self) -> str:
         return self.name
@@ -51,7 +57,3 @@ class Event(models.Model):
             raise ValidationError(
                 'The end date of an event must be later than the start date.'
             )
-
-
-# Create separate app for the Users?
-# Group -> with manytomanyfield of members(Users)
