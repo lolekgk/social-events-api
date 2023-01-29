@@ -44,7 +44,11 @@ class Event(models.Model):
         choices=EventStatus.choices, max_length=1, default=EventStatus.PLANNED
     )
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
-    banner = models.ImageField(upload_to='event-banner-images', blank=True)
+    banner = models.ImageField(
+        upload_to='event-banners/',
+        null=True,
+        blank=True,
+    )
     # recurring events
     # https://django-recurrence.readthedocs.io/en/latest/index.html
     # group ? foreign key to the group of friends(users)
