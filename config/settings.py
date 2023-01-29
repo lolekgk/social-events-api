@@ -19,14 +19,14 @@ import dj_database_url
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = "static/"
-MEDIA_URL = "media/"
+MEDIA_URL = "images/"
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-STATIC_DIR = BASE_DIR / STATIC_URL
-MEDIA_DIR = BASE_DIR / MEDIA_URL
+STATIC_ROOT = BASE_DIR / STATIC_URL
+MEDIA_ROOT = STATIC_ROOT / MEDIA_URL
 
 
 # Quick-start development settings - unsuitable for production
@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     # third party apps
     "rest_framework",
     "drf_spectacular",
+    "djoser",
     # local apps
     "events",
     "users",
@@ -147,6 +148,17 @@ SPECTACULAR_SETTINGS = {
 REST_FRAMEWORK = {
     # YOUR SETTINGS
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('JWT',),
+}
+
+DJOSER = {
+    'SERIALIZERS': {'user_create': 'users.serializers.UserCreateSerializer'}
 }
 
 AUTH_USER_MODEL = 'users.User'
