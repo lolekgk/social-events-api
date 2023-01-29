@@ -4,9 +4,13 @@ from django.db import models
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
+    birth_date = models.DateField()
     friends = models.ManyToManyField('self')
     profile_picture = models.ImageField(
-        upload_to='user-profile-images/', blank=True
+        default='default-profile-pic.png',
+        upload_to='profile-pics/',
+        null=True,
+        blank=True,
     )
 
 
