@@ -146,3 +146,6 @@ dmypy.json
 # Ignore all local history of files
 .history
 .ionide
+
+# Ignore not default user images and event banners
+/static/images/*/
