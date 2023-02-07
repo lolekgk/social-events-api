@@ -557,6 +557,34 @@ django = ">=3.2.4"
 sqlparse = ">=0.2"
 
 [[package]]
+name = "django-light"
+version = "0.1.0.post3"
+description = "Disable dark mode in Django admin UI."
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "django-light-0.1.0.post3.tar.gz", hash = "sha256:74e7fc67c4aaaae304cb34529b5bb9e46b78ce6c87381c5edc00b7f4f84a422e"},
+    {file = "django_light-0.1.0.post3-py3-none-any.whl", hash = "sha256:921a09124f2a8db0c0ea3a8f06dede5782180b0398f901bc595305db7b622a90"},
+]
+
+[[package]]
+name = "django-recurrence"
+version = "1.11.1"
+description = "Django utility wrapping dateutil.rrule"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "django-recurrence-1.11.1.tar.gz", hash = "sha256:9c89444e651a78c587f352c5f63eda48ab2f53996347b9fcdff2d248f4fcff70"},
+    {file = "django_recurrence-1.11.1-py3-none-any.whl", hash = "sha256:0c65f30872599b5813a9bab6952dada23c55894f28674490a753ada559f14bc5"},
+]
+
+[package.dependencies]
+django = ">=2.2"
+python-dateutil = "*"
+
+[[package]]
 name = "django-stubs"
 version = "1.13.1"
 description = "Mypy stubs for Django"
@@ -1183,6 +1211,21 @@ files = [
 ]
 
 [[package]]
+name = "python-dateutil"
+version = "2.8.2"
+description = "Extensions to the standard Python datetime module"
+category = "main"
+optional = false
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
+files = [
+    {file = "python-dateutil-2.8.2.tar.gz", hash = "sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86"},
+    {file = "python_dateutil-2.8.2-py2.py3-none-any.whl", hash = "sha256:961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9"},
+]
+
+[package.dependencies]
+six = ">=1.5"
+
+[[package]]
 name = "python-dotenv"
 version = "0.21.0"
 description = "Read key-value pairs from a .env file and set them as environment variables"
@@ -1504,4 +1547,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "c01ad2e1dfcbb3a77914a882903cfa4e084f13e3123bc977b8df465dcffb2b18"
+content-hash = "7335805a1c9db3fa9d0235d477ec59458efa550f11f6620d6996e5601dc4f18f"
