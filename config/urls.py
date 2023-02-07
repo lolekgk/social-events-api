@@ -16,30 +16,44 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
+from django.views.i18n import JavaScriptCatalog
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularRedocView,
     SpectacularSwaggerView,
 )
 
+js_info_dict = {
+    'packages': ('recurrence',),
+}
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('api-auth/', include('rest_framework.urls')),
+    # path('users/', include('users.urls')),
     path('events/', include('events.urls')),
+    # path('messagebox/', include('messagebox.urls')),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
     path(
-        'doc/',
+        'docs/',
         SpectacularSwaggerView.as_view(url_name='schema'),
         name='swagger-ui',
     ),
     path(
-        'redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'
+        'redocs/',
+        SpectacularRedocView.as_view(url_name='schema'),
+        name='redoc',
     ),
-    # for development
-    path('__debug__/', include('debug_toolbar.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-# TODO add swagger and debug toolbar only for dev?
+# jsi18n can be anything you like here
+urlpatterns += [
+    re_path(r'^jsi18n/$', JavaScriptCatalog.as_view(), js_info_dict),
+]
+
+# TODO add  debug toolbar only for dev
+if settings.DEBUG:
+    urlpatterns.append(path('__debug__/', include('debug_toolbar.urls')))
+print(urlpatterns)
