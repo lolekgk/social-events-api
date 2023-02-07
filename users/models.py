@@ -4,14 +4,17 @@ from django.db import models
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
-    birth_date = models.DateField()
-    friends = models.ManyToManyField('self')
+    birth_date = models.DateField(blank=True, null=True)
+    friends = models.ManyToManyField('self', blank=True)
     profile_picture = models.ImageField(
         default='default-profile-pic.png',
         upload_to='profile-pics/',
         null=True,
         blank=True,
     )
+
+    def __str__(self) -> str:
+        return self.username
 
 
 class UserGroup(models.Model):

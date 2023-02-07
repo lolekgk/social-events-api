@@ -1,14 +1,18 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils.translation import gettext_lazy as _
+from recurrence.fields import RecurrenceField
 
 
 class Location(models.Model):
     name = models.CharField(max_length=75)
-    country = models.CharField(max_length=75)
-    city = models.CharField(max_length=75)
-    street = models.CharField(max_length=75)
-    street_number = models.CharField(max_length=10)
+    longitude = models.FloatField()
+    latitude = models.FloatField()
+    country = models.CharField(max_length=75, blank=True, null=True)
+    city = models.CharField(max_length=75, blank=True, null=True)
+    street = models.CharField(max_length=75, blank=True, null=True)
+    street_number = models.CharField(max_length=10, blank=True, null=True)
     zip_code = models.CharField(max_length=10, blank=True, null=True)
 
     def __str__(self) -> str:
@@ -17,16 +21,16 @@ class Location(models.Model):
 
 class Event(models.Model):
     class EventStatus(models.TextChoices):
-        PLANNED = 'P'
-        ONGOING = 'O'
-        CANCELLED = 'C'
-        ENDED = 'E'
+        PLANNED = 'P', _('Planned')
+        ONGOING = 'O', _('Ongoing')
+        CANCELLED = 'C', _('Cancelled')
+        ENDED = 'E', _('Ended')
 
     class EventAccess(models.TextChoices):
-        OPEN = 'O'
-        INVITATION = 'I'
+        OPEN = 'O', _('Open')
+        INVITATION = 'I', _('Invitation')
 
-    name = models.CharField(max_length=255)  # should it be unique?
+    name = models.CharField(max_length=255)
     access = models.CharField(
         choices=EventAccess.choices, max_length=1, default=EventAccess.OPEN
     )
@@ -45,10 +49,12 @@ class Event(models.Model):
     )
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
     banner = models.ImageField(
+        default='default-banner.jpeg',
         upload_to='event-banners/',
         null=True,
         blank=True,
     )
+    recurrences = RecurrenceField(blank=True, null=True)
     # recurring events
     # https://django-recurrence.readthedocs.io/en/latest/index.html
     # group ? foreign key to the group of friends(users)

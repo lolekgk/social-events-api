@@ -13,6 +13,7 @@ class UserAdmin(BaseUserAdmin):
         "email",
         "first_name",
         "last_name",
+        "get_friends",
         "birth_date",
         "profile_picture",
         "is_staff",
@@ -59,8 +60,12 @@ class UserAdmin(BaseUserAdmin):
                     "first_name",
                     "last_name",
                     "birth_date",
+                    "friends",
                     "profile_picture",
                 ),
             },
         ),
     )
+
+    def get_friends(self, obj):
+        return [friend for friend in obj.friends.all()]
