@@ -16,6 +16,9 @@ class User(AbstractUser):
     def __str__(self) -> str:
         return self.username
 
+    class Meta:
+        ordering = ['email']
+
 
 class UserGroup(models.Model):
     name = models.TextField(max_length=255)

@@ -1,7 +1,14 @@
+from typing import Any
+
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.db.models import Count, QuerySet
+from django.http import HttpRequest
+from django.urls import reverse
+from django.utils.html import format_html
+from django.utils.http import urlencode
 
-from .models import User
+from .models import User, UserGroup
 
 
 # TODO add users's friends to admin panel
@@ -66,6 +73,30 @@ class UserAdmin(BaseUserAdmin):
             },
         ),
     )
-
+    # todo
     def get_friends(self, obj):
         return [friend for friend in obj.friends.all()]
+
+
+@admin.register(UserGroup)
+class UserGroupAdmin(admin.ModelAdmin):
+    list_display = ['name', 'members_count']
+
+    @admin.display(ordering='members_count')
+    def members_count(self, user_group: UserGroup):
+        # go to the Users list
+        url = (
+            reverse('admin:users_user_changelist')
+            + '?'
+            + urlencode({'groups_member__id': str(user_group.id)})
+        )
+        return format_html(
+            '<a href="{}">{}</a>', url, user_group.members_count
+        )
+
+    def get_queryset(self, request: HttpRequest) -> QuerySet[Any]:
+        return (
+            super()
+            .get_queryset(request)
+            .annotate(members_count=Count('members'))
+        )
