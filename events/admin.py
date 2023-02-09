@@ -28,3 +28,4 @@ class LocationAdmin(admin.ModelAdmin):
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
     list_filter = ['status', 'access']
+    autocomplete_fields = ['location']

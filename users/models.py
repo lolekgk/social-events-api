@@ -14,7 +14,7 @@ class User(AbstractUser):
     )
 
     def __str__(self) -> str:
-        return self.username
+        return f"{self.first_name} {self.last_name} ({self.username})"
 
     class Meta:
         ordering = ['email']

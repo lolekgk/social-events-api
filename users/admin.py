@@ -60,6 +60,7 @@ class UserAdmin(BaseUserAdmin):
     ]
     ordering = ["first_name", "last_name"]
     search_fields = ["first_name__istartswith", "last_name__istartswith"]
+    autocomplete_fields = ["friends"]
 
     # fields in 'edit' panel
     fieldsets = (
@@ -146,6 +147,7 @@ class UserGroupAdmin(admin.ModelAdmin):
     list_per_page = 10
     search_fields = ['name__istartswith']
     ordering = ['name']
+    autocomplete_fields = ['administrators', 'members']
 
     @admin.display(ordering='members_count')
     def members_count(self, user_group: UserGroup):
