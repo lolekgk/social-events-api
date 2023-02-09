@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from recurrence.fields import RecurrenceField
@@ -7,8 +8,12 @@ from recurrence.fields import RecurrenceField
 
 class Location(models.Model):
     name = models.CharField(max_length=75)
-    longitude = models.FloatField()
-    latitude = models.FloatField()
+    longitude = models.FloatField(
+        validators=[MinValueValidator(-180), MaxValueValidator(180)]
+    )
+    latitude = models.FloatField(
+        validators=[MinValueValidator(-90), MaxValueValidator(90)]
+    )
     country = models.CharField(max_length=75, blank=True, null=True)
     city = models.CharField(max_length=75, blank=True, null=True)
     street = models.CharField(max_length=75, blank=True, null=True)
