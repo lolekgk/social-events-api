@@ -16,10 +16,15 @@ class LocationAdmin(admin.ModelAdmin):
         'longitude',
         'latitude',
     ]
-    ordering = ['name', 'longitude', 'latitude']
     list_per_page = 10
+    ordering = ['name', 'longitude', 'latitude']
+    search_fields = [
+        'name__istartswith',
+        'country__istartswith',
+        'city__istartswith',
+    ]
 
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
-    pass
+    list_filter = ['status', 'access']

@@ -1,16 +1,40 @@
 from datetime import datetime
-from typing import Any
+from enum import Enum
+from typing import Any, List, Optional, Tuple
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.db.models import Count, F, QuerySet, Value
-from django.db.models.functions import Concat
+from django.db.models import Count, F, QuerySet
 from django.http import HttpRequest
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.http import urlencode
 
 from .models import User, UserGroup
+
+
+class AgeMajority(Enum):
+    NONADULT = '<18'
+    ADULT = '>18'
+
+
+class AgeFilter(admin.SimpleListFilter):
+    title = 'age'
+    parameter_name = 'age'
+
+    def lookups(self, request: Any, model_admin: Any) -> List[Tuple[Any, str]]:
+
+        return [
+            (AgeMajority.NONADULT.value, 'Nonadult'),
+            (AgeMajority.ADULT.value, 'Adult'),
+        ]
+
+    def queryset(
+        self, request: Any, queryset: QuerySet[Any]
+    ) -> Optional[QuerySet[Any]]:
+        if self.value() == AgeMajority.NONADULT.value:
+            return queryset.filter(age__lt=18)
+        return queryset.filter(age__gt=18)
 
 
 @admin.register(User)
@@ -26,6 +50,16 @@ class UserAdmin(BaseUserAdmin):
     ]
     list_editable = ["profile_picture", "is_staff"]
     list_per_page = 10
+    list_filter = [
+        AgeFilter,
+        "groups_member",
+        "is_staff",
+        "is_superuser",
+        "is_active",
+        "groups",
+    ]
+    ordering = ["first_name", "last_name"]
+    search_fields = ["first_name__istartswith", "last_name__istartswith"]
 
     # fields in 'edit' panel
     fieldsets = (
@@ -109,6 +143,9 @@ class UserAdmin(BaseUserAdmin):
 @admin.register(UserGroup)
 class UserGroupAdmin(admin.ModelAdmin):
     list_display = ['name', 'members_count']
+    list_per_page = 10
+    search_fields = ['name__istartswith']
+    ordering = ['name']
 
     @admin.display(ordering='members_count')
     def members_count(self, user_group: UserGroup):
