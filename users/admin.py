@@ -1,8 +1,9 @@
+from datetime import datetime
 from typing import Any
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.db.models import Count, QuerySet
+from django.db.models import Count, F, QuerySet
 from django.http import HttpRequest
 from django.urls import reverse
 from django.utils.html import format_html
@@ -11,21 +12,21 @@ from django.utils.http import urlencode
 from .models import User, UserGroup
 
 
-# TODO add users's friends to admin panel
-# TODO add age to filtering
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
-    list_display = (
+    list_display = [
         "username",
         "email",
-        "first_name",
-        "last_name",
-        "get_friends",
-        "birth_date",
+        "full_name",
+        "friends_count",
+        "age",
         "profile_picture",
         "is_staff",
-    )
+    ]
+    list_editable = ["profile_picture", "is_staff"]
+    list_per_page = 10
 
+    # fields in 'edit' panel
     fieldsets = (
         ("Sign-in data", {"fields": ("username", "password")}),
         (
@@ -54,9 +55,11 @@ class UserAdmin(BaseUserAdmin):
         ),
         (("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
+
+    # fields in 'add' panel
     add_fieldsets = (
         (
-            None,
+            (None),
             {
                 "classes": ("wide",),
                 "fields": (
@@ -73,9 +76,32 @@ class UserAdmin(BaseUserAdmin):
             },
         ),
     )
-    # todo
-    def get_friends(self, obj):
-        return [friend for friend in obj.friends.all()]
+
+    def get_queryset(self, request: HttpRequest) -> QuerySet[Any]:
+        return (
+            super()
+            .get_queryset(request)
+            .annotate(
+                friends_count=Count('friends'),
+                age=datetime.now().year - F('birth_date__year'),
+            )
+        )
+
+    @admin.display(ordering='friends_count')
+    def friends_count(self, user: User):
+        url = (
+            reverse('admin:users_user_changelist')
+            + '?'
+            + urlencode({'friends__id': str(user.id)})
+        )
+        return format_html('<a href="{}">{}</a>', url, user.friends_count)
+
+    @admin.display(ordering='age')
+    def age(self, user: User):
+        return user.age
+
+    def full_name(self, user: User):
+        return f"{user.first_name} {user.last_name}"
 
 
 @admin.register(UserGroup)
