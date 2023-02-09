@@ -3,7 +3,8 @@ from typing import Any
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.db.models import Count, F, QuerySet
+from django.db.models import Count, F, QuerySet, Value
+from django.db.models.functions import Concat
 from django.http import HttpRequest
 from django.urls import reverse
 from django.utils.html import format_html
@@ -100,8 +101,9 @@ class UserAdmin(BaseUserAdmin):
     def age(self, user: User):
         return user.age
 
+    @admin.display(ordering='full_name')
     def full_name(self, user: User):
-        return f"{user.first_name} {user.last_name}"
+        return user.get_full_name()
 
 
 @admin.register(UserGroup)
