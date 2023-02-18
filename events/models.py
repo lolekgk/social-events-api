@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from recurrence.fields import RecurrenceField
 
 
+# TODO get lazy pliki do tlumaczenia
 class Location(models.Model):
     name = models.CharField(max_length=75)
     longitude = models.FloatField(
@@ -24,6 +25,7 @@ class Location(models.Model):
         return self.name
 
 
+# TODO statusy poza modelem
 class Event(models.Model):
     class EventStatus(models.TextChoices):
         PLANNED = 'P', _('Planned')
@@ -72,3 +74,26 @@ class Event(models.Model):
             raise ValidationError(
                 'The end date of an event must be later than the start date.'
             )
+
+
+class EventInvitation(models.Model):
+    class InvitationStatus(models.TextChoices):
+        ACCEPTED = 'A', _('Accepted')
+        DECLINED = 'D', _('Declined')
+        PENDING = 'P', _('Pending')
+
+    receiver = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='event_invitations',
+    )
+    event = models.ForeignKey(
+        Event,
+        on_delete=models.CASCADE,
+        related_name='invited_users',
+    )
+    status = models.CharField(
+        choices=InvitationStatus.choices,
+        max_length=1,
+        default=InvitationStatus.PENDING,
+    )
