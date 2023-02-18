@@ -1,5 +1,9 @@
 from django.urls import path
+from rest_framework.routers import DefaultRouter
 
 from . import views
 
-urlpatterns = [path('hello/', views.say_hello)]
+router = DefaultRouter()
+router.register('locations', views.LocationViewSet)
+
+urlpatterns = router.urls
