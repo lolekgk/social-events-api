@@ -1,7 +1,7 @@
 from django.db.models import Count
 from django_filters.rest_framework import FilterSet, TypedChoiceFilter
 
-from .models import Location
+from .models import Location, Event
 
 
 class LocationFilter(FilterSet):

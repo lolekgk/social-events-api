@@ -52,6 +52,7 @@ class UserAdmin(BaseUserAdmin):
     list_editable = ["profile_picture", "is_staff"]
     list_per_page = 10
     list_filter = [
+        "date_joined",
         AgeFilter,
         "groups_member",
         "is_staff",

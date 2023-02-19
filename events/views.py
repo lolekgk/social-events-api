@@ -42,7 +42,7 @@ class EventIvitationDetailView:
 
 class EventViewSet(ModelViewSet):
     queryset = Event.objects.all()  # TODO show only event's, that user can see
-    filter_backends = [OrderingFilter]
+    filter_backends = [SearchFilter, OrderingFilter]
     ordering_fields = ['name']
     pagination_class = DefaultPagination
 

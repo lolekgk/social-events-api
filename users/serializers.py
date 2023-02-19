@@ -1,8 +1,16 @@
 from djoser.serializers import UserCreateSerializer as BaseUserCreateSerializer
+from rest_framework import serializers
+
+from .models import User
+
+# TODO ogarnać autentykacje -> dlaczego nie dodawane jest deafultowe zdjęcie?
 
 
 class UserCreateSerializer(BaseUserCreateSerializer):
+    profile_picture = serializers.ImageField(default='default-profile-pic.png')
+
     class Meta(BaseUserCreateSerializer.Meta):
+        model = User
         fields = [
             'id',
             'username',
@@ -10,4 +18,6 @@ class UserCreateSerializer(BaseUserCreateSerializer):
             'email',
             'first_name',
             'last_name',
+            'birth_date',
+            'profile_picture',
         ]

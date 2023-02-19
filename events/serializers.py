@@ -57,6 +57,9 @@ class EventRetrieveSerializer(serializers.ModelSerializer):
 
 class EventCreateUpdateSerializer(serializers.ModelSerializer):
     recurrences = RecurrenceField()
+    banner = serializers.ImageField(
+        default='default-banner.jpeg',
+    )
 
     class Meta:
         model = Event
