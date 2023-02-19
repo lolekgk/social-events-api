@@ -16,16 +16,6 @@ from .serializers import (
 )
 
 
-class EventViewSet(ModelViewSet):
-    queryset = Event.objects.all()  # TODO show only event's, that user can see
-    pagination_class = DefaultPagination
-
-    def get_serializer_class(self):
-        if self.request.method == 'GET':
-            return EventRetrieveSerializer
-        return EventCreateUpdateSerializer
-
-
 class EventOrganizerListView:
     pass
 
@@ -48,6 +38,18 @@ class EventInvitationListView:
 
 class EventIvitationDetailView:
     pass
+
+
+class EventViewSet(ModelViewSet):
+    queryset = Event.objects.all()  # TODO show only event's, that user can see
+    filter_backends = [OrderingFilter]
+    ordering_fields = ['name']
+    pagination_class = DefaultPagination
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return EventRetrieveSerializer
+        return EventCreateUpdateSerializer
 
 
 class LocationViewSet(ModelViewSet):
