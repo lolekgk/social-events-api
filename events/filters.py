@@ -1,7 +1,7 @@
 from django.db.models import Count
 from django_filters.rest_framework import FilterSet, TypedChoiceFilter
 
-from .models import Location, Event
+from .models import Event, Location
 
 
 class LocationFilter(FilterSet):
@@ -24,3 +24,9 @@ class LocationFilter(FilterSet):
         return queryset.annotate(event_count=Count('events')).filter(
             event_count=0
         )
+
+
+class EventFilter(FilterSet):
+    class Meta:
+        model = Event
+        fields = {'location_id': ['exact']}

@@ -5,7 +5,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from .filters import LocationFilter
+from .filters import EventFilter, LocationFilter
 from .models import Event, Location
 from .pagination import DefaultPagination
 from .serializers import (
@@ -42,8 +42,20 @@ class EventIvitationDetailView:
 
 class EventViewSet(ModelViewSet):
     queryset = Event.objects.all()  # TODO show only event's, that user can see
-    filter_backends = [SearchFilter, OrderingFilter]
-    ordering_fields = ['name']
+    filter_backends = [
+        DjangoFilterBackend,
+        SearchFilter,
+        OrderingFilter,
+    ]  # TODO filter by participants number, location(Custom filter), access(open, closed), status,
+    # TODO reccurring every week, itp., check if it's possible to add searchfield to location filter
+    filterset_class = EventFilter
+    ordering_fields = ['name', 'start_time']
+    search_fields = [
+        'name',
+        'location__city',
+        'location__country',
+        'location__street',
+    ]
     pagination_class = DefaultPagination
 
     def get_serializer_class(self):
@@ -81,3 +93,6 @@ class LocationViewSet(ModelViewSet):
                 status=status.HTTP_409_CONFLICT,
             )
         return super().destroy(request, *args, **kwargs)
+
+
+# * should I display an events in location? or it's better to add nested location to an event

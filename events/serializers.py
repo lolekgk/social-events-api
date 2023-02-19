@@ -17,7 +17,7 @@ class LocationRetrieveSerializer(serializers.ModelSerializer):
             'street',
             'street_number',
             'zip_code',
-            'events',
+            # 'events',
         ]
 
 
@@ -37,6 +37,12 @@ class LocationCreateUpdateSerializer(serializers.ModelSerializer):
 
 
 class EventRetrieveSerializer(serializers.ModelSerializer):
+    participants_number = serializers.SerializerMethodField()
+    location = LocationRetrieveSerializer()
+
+    def get_participants_number(self, obj: Event):
+        return obj.participants.count()
+
     class Meta:
         model = Event
         fields = [
@@ -47,6 +53,7 @@ class EventRetrieveSerializer(serializers.ModelSerializer):
             'created_at',
             'organizers',  # TODO add nested user models?
             'participants',
+            'participants_number',
             'start_time',
             'end_time',
             'location',  # TODO add nested location model here

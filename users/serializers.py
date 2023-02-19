@@ -3,8 +3,6 @@ from rest_framework import serializers
 
 from .models import User
 
-# TODO ogarnać autentykacje -> dlaczego nie dodawane jest deafultowe zdjęcie?
-
 
 class UserCreateSerializer(BaseUserCreateSerializer):
     profile_picture = serializers.ImageField(default='default-profile-pic.png')
