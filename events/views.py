@@ -9,20 +9,28 @@ from .filters import LocationFilter
 from .models import Event, Location
 from .pagination import DefaultPagination
 from .serializers import (
+    EventCreateUpdateSerializer,
+    EventRetrieveSerializer,
     LocationCreateUpdateSerializer,
     LocationRetrieveSerializer,
 )
 
 
 class EventViewSet(ModelViewSet):
-    pass
+    queryset = Event.objects.all()  # TODO show only event's, that user can see
+    pagination_class = DefaultPagination
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return EventRetrieveSerializer
+        return EventCreateUpdateSerializer
 
 
 class EventOrganizerListView:
     pass
 
 
-class EventOrganizerDetailVew:
+class EventOrganizerDetailView:
     pass
 
 

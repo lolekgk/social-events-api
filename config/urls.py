@@ -53,6 +53,5 @@ urlpatterns += [
     re_path(r'^jsi18n/$', JavaScriptCatalog.as_view(), js_info_dict),
 ]
 
-# TODO add  debug toolbar only for dev
 if settings.DEBUG:
     urlpatterns.append(path('__debug__/', include('debug_toolbar.urls')))

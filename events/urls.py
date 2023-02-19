@@ -5,5 +5,6 @@ from . import views
 
 router = DefaultRouter()
 router.register('locations', views.LocationViewSet, basename='locations')
+router.register('', views.EventViewSet, basename='events')
 
 urlpatterns = router.urls
