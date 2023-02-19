@@ -34,7 +34,8 @@ class AgeFilter(admin.SimpleListFilter):
     ) -> Optional[QuerySet[Any]]:
         if self.value() == AgeMajority.NONADULT.value:
             return queryset.filter(age__lt=18)
-        return queryset.filter(age__gt=18)
+        elif self.value() == AgeMajority.ADULT.value:
+            return queryset.filter(age__gt=18)
 
 
 @admin.register(User)
@@ -59,7 +60,11 @@ class UserAdmin(BaseUserAdmin):
         "groups",
     ]
     ordering = ["first_name", "last_name"]
-    search_fields = ["first_name__istartswith", "last_name__istartswith"]
+    search_fields = [
+        "first_name__istartswith",
+        "last_name__istartswith",
+        "email__istarswith",
+    ]
     autocomplete_fields = ["friends"]
 
     # fields in 'edit' panel
@@ -73,6 +78,7 @@ class UserAdmin(BaseUserAdmin):
                     "last_name",
                     "email",
                     "birth_date",
+                    "friends",
                     "profile_picture",
                 )
             },

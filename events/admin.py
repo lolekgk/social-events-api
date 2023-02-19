@@ -12,10 +12,7 @@ class LocationAdmin(admin.ModelAdmin):
         'country',
         'city',
     ]
-    list_editable = [
-        'longitude',
-        'latitude',
-    ]
+
     list_per_page = 10
     ordering = ['name', 'longitude', 'latitude']
     search_fields = [
