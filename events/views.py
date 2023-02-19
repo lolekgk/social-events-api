@@ -5,9 +5,13 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from events.models import Event, Location
-from events.pagination import DefaultPagination
-from events.serializers import LocationSerializer
+from .filters import LocationFilter
+from .models import Event, Location
+from .pagination import DefaultPagination
+from .serializers import (
+    LocationCreateUpdateSerializer,
+    LocationRetrieveSerializer,
+)
 
 
 class EventViewSet(ModelViewSet):
@@ -40,14 +44,20 @@ class EventIvitationDetailView:
 
 class LocationViewSet(ModelViewSet):
     queryset = Location.objects.all()
-    serializer_class = LocationSerializer
-    filter_backends = [SearchFilter, OrderingFilter]
+    # serializer_class = LocationSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_class = LocationFilter
     search_fields = ['name', 'country', 'city', 'street']
     ordering_fields = ['name', 'longitude', 'latitude']
     pagination_class = DefaultPagination
 
     # def get_queryset(self):
     #     return Location.objects.all()
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return LocationRetrieveSerializer
+        return LocationCreateUpdateSerializer
 
     def get_serializer_context(self):
         return {'request': self.request}
@@ -58,6 +68,6 @@ class LocationViewSet(ModelViewSet):
                 {
                     "error": "Location cannot be deleted, because it is associated with an event.",
                 },
-                status=status.HTTP_405_METHOD_NOT_ALLOWED,
+                status=status.HTTP_409_CONFLICT,
             )
         return super().destroy(request, *args, **kwargs)

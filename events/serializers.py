@@ -3,7 +3,7 @@ from rest_framework import serializers
 from events.models import Event, Location
 
 
-class LocationSerializer(serializers.ModelSerializer):
+class LocationRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Location
         fields = [
@@ -16,5 +16,21 @@ class LocationSerializer(serializers.ModelSerializer):
             'street',
             'street_number',
             'zip_code',
-            'event_set',
+            'events',
+        ]
+
+
+class LocationCreateUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Location
+        fields = [
+            'id',
+            'name',
+            'longitude',
+            'latitude',
+            'country',
+            'city',
+            'street',
+            'street_number',
+            'zip_code',
         ]

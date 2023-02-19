@@ -54,7 +54,9 @@ class Event(models.Model):
     status = models.CharField(
         choices=EventStatus.choices, max_length=1, default=EventStatus.PLANNED
     )
-    location = models.ForeignKey(Location, on_delete=models.CASCADE)
+    location = models.ForeignKey(
+        Location, on_delete=models.CASCADE, related_name="events"
+    )
     banner = models.ImageField(
         default='default-banner.jpeg',
         upload_to='event-banners/',
