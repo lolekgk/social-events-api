@@ -56,7 +56,7 @@ class EventRetrieveSerializer(serializers.ModelSerializer):
             'participants_number',
             'start_time',
             'end_time',
-            'location',  # TODO add nested location model here
+            'location',
             'banner',
             'recurrences',
         ]

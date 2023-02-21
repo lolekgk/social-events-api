@@ -96,3 +96,4 @@ class LocationViewSet(ModelViewSet):
 
 
 # * should I display an events in location? or it's better to add nested location to an event
+# * how to integrate with a 'map' service to set a location
