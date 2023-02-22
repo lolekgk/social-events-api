@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 import os
+from datetime import timedelta
 from pathlib import Path
 
 import dj_database_url
@@ -157,11 +158,16 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'AUTH_HEADER_TYPES': ('JWT',),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    # TODO change it later
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
 }
 
 DJOSER = {
-    'SERIALIZERS': {'user_create': 'users.serializers.UserCreateSerializer'}
+    'SERIALIZERS': {
+        'user_create': 'users.serializers.UserCreateSerializer',
+        'current_user': 'users.serializers.CurrentUserSerializer',
+    }
 }
 
 AUTH_USER_MODEL = 'users.User'

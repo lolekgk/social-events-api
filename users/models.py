@@ -1,8 +1,11 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from users.managers import CustomUserManager
+
 
 class User(AbstractUser):
+    objects = CustomUserManager()
     email = models.EmailField(unique=True)
     birth_date = models.DateField(blank=True, null=True)
     friends = models.ManyToManyField('self', blank=True)

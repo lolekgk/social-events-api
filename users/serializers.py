@@ -19,3 +19,9 @@ class UserCreateSerializer(BaseUserCreateSerializer):
             'birth_date',
             'profile_picture',
         ]
+
+
+class CurrentUserSerializer(UserCreateSerializer):
+    class Meta(BaseUserCreateSerializer.Meta):
+        model = User
+        fields = UserCreateSerializer.Meta.fields + ['friends', 'date_joined']
