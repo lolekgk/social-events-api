@@ -24,4 +24,9 @@ class UserCreateSerializer(BaseUserCreateSerializer):
 class CurrentUserSerializer(UserCreateSerializer):
     class Meta(BaseUserCreateSerializer.Meta):
         model = User
-        fields = UserCreateSerializer.Meta.fields + ['friends', 'date_joined']
+        fields = UserCreateSerializer.Meta.fields + [
+            'friends',
+            'groups_member',
+            'groups_admin',
+            'date_joined',
+        ]
