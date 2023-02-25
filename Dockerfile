@@ -36,6 +36,6 @@ ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.7.3/wait
 
 RUN chmod +x /wait
 
-USER ${APP_USER}
+# USER ${APP_USER}
 
 CMD /wait

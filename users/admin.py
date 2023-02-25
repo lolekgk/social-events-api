@@ -14,19 +14,19 @@ from .models import User, UserGroup
 
 
 class AgeMajority(Enum):
-    NONADULT = '<18'
-    ADULT = '>18'
+    NONADULT = "<18"
+    ADULT = ">18"
 
 
 class AgeFilter(admin.SimpleListFilter):
-    title = 'age'
-    parameter_name = 'age'
+    title = "age"
+    parameter_name = "age"
 
     def lookups(self, request: Any, model_admin: Any) -> List[Tuple[Any, str]]:
 
         return [
-            (AgeMajority.NONADULT.value, 'Nonadult'),
-            (AgeMajority.ADULT.value, 'Adult'),
+            (AgeMajority.NONADULT.value, "Nonadult"),
+            (AgeMajority.ADULT.value, "Adult"),
         ]
 
     def queryset(
@@ -125,44 +125,44 @@ class UserAdmin(BaseUserAdmin):
             super()
             .get_queryset(request)
             .annotate(
-                friends_count=Count('friends'),
-                age=datetime.now().year - F('birth_date__year'),
+                friends_count=Count("friends"),
+                age=datetime.now().year - F("birth_date__year"),
             )
         )
 
-    @admin.display(ordering='friends_count')
+    @admin.display(ordering="friends_count")
     def friends_count(self, user: User):
         url = (
-            reverse('admin:users_user_changelist')
-            + '?'
-            + urlencode({'friends__id': str(user.id)})
+            reverse("admin:users_user_changelist")
+            + "?"
+            + urlencode({"friends__id": str(user.id)})
         )
         return format_html('<a href="{}">{}</a>', url, user.friends_count)
 
-    @admin.display(ordering='age')
+    @admin.display(ordering="age")
     def age(self, user: User):
         return user.age
 
-    @admin.display(ordering='full_name')
+    @admin.display(ordering="full_name")
     def full_name(self, user: User):
         return user.get_full_name()
 
 
 @admin.register(UserGroup)
 class UserGroupAdmin(admin.ModelAdmin):
-    list_display = ['name', 'members_count']
+    list_display = ["name", "members_count"]
     list_per_page = 10
-    search_fields = ['name__istartswith']
-    ordering = ['name']
-    autocomplete_fields = ['administrators', 'members']
+    search_fields = ["name__istartswith"]
+    ordering = ["name"]
+    autocomplete_fields = ["administrators", "members"]
 
-    @admin.display(ordering='members_count')
+    @admin.display(ordering="members_count")
     def members_count(self, user_group: UserGroup):
         # go to the Users list
         url = (
-            reverse('admin:users_user_changelist')
-            + '?'
-            + urlencode({'groups_member__id': str(user_group.id)})
+            reverse("admin:users_user_changelist")
+            + "?"
+            + urlencode({"groups_member__id": str(user_group.id)})
         )
         return format_html(
             '<a href="{}">{}</a>', url, user_group.members_count
@@ -172,5 +172,5 @@ class UserGroupAdmin(admin.ModelAdmin):
         return (
             super()
             .get_queryset(request)
-            .annotate(members_count=Count('members'))
+            .annotate(members_count=Count("members"))
         )
