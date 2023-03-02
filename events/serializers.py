@@ -40,7 +40,7 @@ class EventRetrieveSerializer(serializers.ModelSerializer):
     participants_number = serializers.SerializerMethodField()
     location = LocationRetrieveSerializer()
 
-    def get_participants_number(self, obj: Event):
+    def get_participants_number(self, obj: Event) -> int:
         return obj.participants.count()
 
     class Meta:
@@ -65,7 +65,7 @@ class EventRetrieveSerializer(serializers.ModelSerializer):
 class EventCreateUpdateSerializer(serializers.ModelSerializer):
     recurrences = RecurrenceField()
     banner = serializers.ImageField(
-        default="default-banner.jpeg",
+        default="default-banner.jpeg",  # type: ignore
     )
 
     class Meta:
@@ -81,11 +81,7 @@ class EventCreateUpdateSerializer(serializers.ModelSerializer):
             "recurrences",
         ]
 
-    def validate(self, attrs):  # TODO
-        start_time = attrs.get("start_time")
-        end_time = attrs.get("end_time")
-        if start_time > end_time:
-            raise serializers.ValidationError(
-                "The end time must be later than the start time."
-            )
+    def validate(self, attrs: dict) -> dict:  # TODO
+        instance = Event(**attrs)
+        instance.clean()
         return attrs
