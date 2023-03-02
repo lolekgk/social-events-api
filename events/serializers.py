@@ -17,7 +17,6 @@ class LocationRetrieveSerializer(serializers.ModelSerializer):
             "street",
             "street_number",
             "zip_code",
-            # 'events',
         ]
 
 
