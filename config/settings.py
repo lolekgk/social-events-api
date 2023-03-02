@@ -176,7 +176,7 @@ SIMPLE_JWT = {
 REST_AUTH = {
     "USE_JWT": True,
     "JWT_AUTH_COOKIE": "social-app-auth",
-    "JWT_AUTH_REFRESH_COOKIE": "my-refresh-token",
+    "JWT_AUTH_REFRESH_COOKIE": "social-app-refresh",
 }
 
 # django-allauth

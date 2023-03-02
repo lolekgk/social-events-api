@@ -28,14 +28,14 @@ class Location(models.Model):
 # TODO statusy poza modelem
 class Event(models.Model):
     class EventStatus(models.TextChoices):
-        PLANNED = 'P', _('Planned')
-        ONGOING = 'O', _('Ongoing')
-        CANCELLED = 'C', _('Cancelled')
-        ENDED = 'E', _('Ended')
+        PLANNED = "P", _("Planned")
+        ONGOING = "O", _("Ongoing")
+        CANCELLED = "C", _("Cancelled")
+        ENDED = "E", _("Ended")
 
     class EventAccess(models.TextChoices):
-        OPEN = 'O', _('Open')
-        INVITATION = 'I', _('Invitation')
+        OPEN = "O", _("Open")
+        INVITATION = "I", _("Invitation")
 
     name = models.CharField(max_length=255)
     access = models.CharField(
@@ -44,10 +44,10 @@ class Event(models.Model):
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     organizers = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, related_name='events_organizer'
+        settings.AUTH_USER_MODEL, related_name="events_organizer"
     )
     participants = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, related_name='events_participant'
+        settings.AUTH_USER_MODEL, related_name="events_participant"
     )
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
@@ -58,8 +58,8 @@ class Event(models.Model):
         Location, on_delete=models.CASCADE, related_name="events"
     )
     banner = models.ImageField(
-        default='default-banner.jpeg',
-        upload_to='event-banners/',
+        default="default-banner.jpeg",
+        upload_to="event-banners/",
         null=True,
         blank=True,
     )
@@ -71,28 +71,28 @@ class Event(models.Model):
     def __str__(self) -> str:
         return self.name
 
-    def clean(self):
+    def clean(self) -> None:
         if self.start_time >= self.end_time:
             raise ValidationError(
-                'The end date of an event must be later than the start date.'
+                "The end date of an event must be later than the start date."
             )
 
 
 class EventInvitation(models.Model):
     class InvitationStatus(models.TextChoices):
-        ACCEPTED = 'A', _('Accepted')
-        DECLINED = 'D', _('Declined')
-        PENDING = 'P', _('Pending')
+        ACCEPTED = "A", _("Accepted")
+        DECLINED = "D", _("Declined")
+        PENDING = "P", _("Pending")
 
     receiver = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name='event_invitations',
+        related_name="event_invitations",
     )
     event = models.ForeignKey(
         Event,
         on_delete=models.CASCADE,
-        related_name='invited_users',
+        related_name="invited_users",
     )
     status = models.CharField(
         choices=InvitationStatus.choices,

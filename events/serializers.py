@@ -8,15 +8,15 @@ class LocationRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Location
         fields = [
-            'id',
-            'name',
-            'longitude',
-            'latitude',
-            'country',
-            'city',
-            'street',
-            'street_number',
-            'zip_code',
+            "id",
+            "name",
+            "longitude",
+            "latitude",
+            "country",
+            "city",
+            "street",
+            "street_number",
+            "zip_code",
             # 'events',
         ]
 
@@ -25,14 +25,14 @@ class LocationCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Location
         fields = [
-            'name',
-            'longitude',
-            'latitude',
-            'country',
-            'city',
-            'street',
-            'street_number',
-            'zip_code',
+            "name",
+            "longitude",
+            "latitude",
+            "country",
+            "city",
+            "street",
+            "street_number",
+            "zip_code",
         ]
 
 
@@ -46,46 +46,46 @@ class EventRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = [
-            'id',
-            'name',
-            'access',
-            'description',
-            'created_at',
-            'organizers',  # TODO add nested user models?
-            'participants',
-            'participants_number',
-            'start_time',
-            'end_time',
-            'location',
-            'banner',
-            'recurrences',
+            "id",
+            "name",
+            "access",
+            "description",
+            "created_at",
+            "organizers",  # TODO add nested user models?
+            "participants",
+            "participants_number",
+            "start_time",
+            "end_time",
+            "location",
+            "banner",
+            "recurrences",
         ]
 
 
 class EventCreateUpdateSerializer(serializers.ModelSerializer):
     recurrences = RecurrenceField()
     banner = serializers.ImageField(
-        default='default-banner.jpeg',
+        default="default-banner.jpeg",
     )
 
     class Meta:
         model = Event
         fields = [
-            'name',
-            'access',
-            'banner',
-            'description',
-            'start_time',
-            'end_time',
-            'location',
-            'recurrences',
+            "name",
+            "access",
+            "banner",
+            "description",
+            "start_time",
+            "end_time",
+            "location",
+            "recurrences",
         ]
 
-    def validate(self, attrs):
-        start_time = attrs.get('start_time')
-        end_time = attrs.get('end_time')
+    def validate(self, attrs):  # TODO
+        start_time = attrs.get("start_time")
+        end_time = attrs.get("end_time")
         if start_time > end_time:
             raise serializers.ValidationError(
-                'The end time must be later than the start time.'
+                "The end time must be later than the start time."
             )
         return attrs

@@ -14,7 +14,6 @@ django-debug-toolbar = "^3.8.1"
 celery = "^5.2.7"
 drf-spectacular = "^0.25.1"
 dj-database-url = "^1.2.0"
-python-dotenv = "^0.21.0"
 psycopg2 = "^2.9.5"
 pillow = "^9.4.0"
 django-recurrence = "^1.11.1"
@@ -40,3 +39,9 @@ line-length = 79
 
 [tool.isort]
 profile = "black"
+
+[tool.mypy]
+plugins = ["mypy_django_plugin.main"]
+
+[tool.django-stubs]
+django_settings_module = "config.settings"
