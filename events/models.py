@@ -6,7 +6,6 @@ from django.utils.translation import gettext_lazy as _
 from recurrence.fields import RecurrenceField
 
 
-# TODO get lazy pliki do tlumaczenia
 class Location(models.Model):
     name = models.CharField(max_length=75)
     longitude = models.FloatField(

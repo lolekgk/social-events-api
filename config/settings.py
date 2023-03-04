@@ -74,6 +74,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -175,8 +176,11 @@ SIMPLE_JWT = {
 # dj-rest-auth
 REST_AUTH = {
     "USE_JWT": True,
+    "JWT_AUTH_HTTPONLY": False,
     "JWT_AUTH_COOKIE": "social-app-auth",
     "JWT_AUTH_REFRESH_COOKIE": "social-app-refresh",
+    "OLD_PASSWORD_FIELD_ENABLED": True,
+    "JWT_AUTH_RETURN_EXPIRATION": True,
 }
 
 # django-allauth
