@@ -57,10 +57,10 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "rest_framework_simplejwt.token_blacklist",
-    "dj_rest_auth",
-    "dj_rest_auth.registration",
     "allauth",
     "allauth.account",
+    "dj_rest_auth",
+    "dj_rest_auth.registration",
     "allauth.socialaccount",
     "django_filters",
     "drf_spectacular",
@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     # local apps
     "events",
     "users",
+    "authentication",
     "messagebox",
 ]
 
@@ -177,10 +178,10 @@ SIMPLE_JWT = {
 REST_AUTH = {
     "USE_JWT": True,
     "JWT_AUTH_HTTPONLY": False,
-    "JWT_AUTH_COOKIE": "social-app-auth",
-    "JWT_AUTH_REFRESH_COOKIE": "social-app-refresh",
+    "JWT_AUTH_COOKIE": "access_token_social_events",
+    "JWT_AUTH_REFRESH_COOKIE": "refresh_token_social_events",
     "OLD_PASSWORD_FIELD_ENABLED": True,
-    "JWT_AUTH_RETURN_EXPIRATION": True,
+    "REGISTER_SERIALIZER": "authentication.serializers.RegisterSerializer",
 }
 
 # django-allauth
@@ -189,7 +190,23 @@ ACCOUNT_AUTHENTICATION_METHOD = "username_email"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = True
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = (
+    "/events/"  # TODO change it later
+)
+LOGIN_URL = "/auth/login/"
 
+
+# Email backend config
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_USE_TLS = True
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+EMAIL_PORT = 587
 
 AUTHENTICATION_BACKENDS = [
     # Needed to login by username in Django admin, regardless of `allauth`
@@ -212,4 +229,4 @@ if DEBUG:
         "10.0.2.2",
     ]
     # dj-rest-auth
-    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+    # EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
