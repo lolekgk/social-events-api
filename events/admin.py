@@ -6,23 +6,23 @@ from .models import Event, Location
 @admin.register(Location)
 class LocationAdmin(admin.ModelAdmin):
     list_display = [
-        'name',
-        'longitude',
-        'latitude',
-        'country',
-        'city',
+        "name",
+        "longitude",
+        "latitude",
+        "country",
+        "city",
     ]
 
     list_per_page = 10
-    ordering = ['name', 'longitude', 'latitude']
+    ordering = ["name", "longitude", "latitude"]
     search_fields = [
-        'name__istartswith',
-        'country__istartswith',
-        'city__istartswith',
+        "name__istartswith",
+        "country__istartswith",
+        "city__istartswith",
     ]
 
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
-    list_filter = ['status', 'access']
-    autocomplete_fields = ['location']
+    list_filter = ["status", "access"]
+    autocomplete_fields = ["location"]

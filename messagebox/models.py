@@ -14,7 +14,7 @@ class MessageThread(models.Model):
         usernames = separator.join(
             [participant.username for participant in self.participants.all()]
         )
-        return f"Messages between {usernames[len(separator)]}"
+        return f"Messages between: {usernames[:-len(separator)]}"
 
 
 class Message(models.Model):
