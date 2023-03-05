@@ -13,6 +13,19 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from dj_rest_auth.jwt_auth import get_refresh_view
+from dj_rest_auth.registration.views import (
+    ConfirmEmailView,
+    RegisterView,
+    VerifyEmailView,
+)
+from dj_rest_auth.views import (
+    LoginView,
+    LogoutView,
+    PasswordChangeView,
+    PasswordResetConfirmView,
+    PasswordResetView,
+)
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -23,6 +36,7 @@ from drf_spectacular.views import (
     SpectacularRedocView,
     SpectacularSwaggerView,
 )
+from rest_framework_simplejwt.views import TokenVerifyView
 
 urlpatterns = [
     # apps endpoints
@@ -30,7 +44,6 @@ urlpatterns = [
     # path('users/', include('users.urls')),
     path("admin/", admin.site.urls),
     path("events/", include("events.urls")),
-    path("auth/", include("authentication.urls")),
     # swagger endpoints
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
@@ -42,6 +55,47 @@ urlpatterns = [
         "redocs/",
         SpectacularRedocView.as_view(url_name="schema"),
         name="redoc",
+    ),
+    # dj-rest-auth endpoints
+    path("/auth/account-confirm-email/<str:key>/", ConfirmEmailView.as_view()),
+    path("auth/register/", RegisterView.as_view()),
+    path(
+        "auth/verify-email/",
+        VerifyEmailView.as_view(),
+        name="verify_email",
+    ),
+    path(
+        "auth/account-confirm-email/",
+        VerifyEmailView.as_view(),
+        name="account_email_verification_sent",
+    ),
+    re_path(
+        r"^auth/account-confirm-email/(?P<key>[-:\w]+)/$",
+        VerifyEmailView.as_view(),
+        name="account_confirm_email",
+    ),
+    path("auth/login/", LoginView.as_view(), name="login"),
+    path("auth/logout/", LogoutView.as_view(), name="logout"),
+    path(
+        "auth/password/reset/",
+        PasswordResetView.as_view(),
+        name="password_reset",
+    ),
+    path(
+        "auth/password/reset/confirm/<str:uidb64>/<str:token>/",
+        PasswordResetConfirmView.as_view(),
+        name="password_reset_confirm",
+    ),
+    path(
+        "auth/password/change/",
+        PasswordChangeView.as_view(),
+        name="password_change",
+    ),
+    path("auth/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
+    path(
+        "auth/token/refresh/",
+        get_refresh_view().as_view(),
+        name="token_refresh",
     ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

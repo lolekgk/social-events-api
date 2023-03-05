@@ -68,7 +68,6 @@ INSTALLED_APPS = [
     # local apps
     "events",
     "users",
-    "authentication",
     "messagebox",
 ]
 
@@ -181,7 +180,6 @@ REST_AUTH = {
     "JWT_AUTH_COOKIE": "access_token_social_events",
     "JWT_AUTH_REFRESH_COOKIE": "refresh_token_social_events",
     "OLD_PASSWORD_FIELD_ENABLED": True,
-    "REGISTER_SERIALIZER": "authentication.serializers.RegisterSerializer",
 }
 
 # django-allauth
