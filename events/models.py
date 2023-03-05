@@ -86,6 +86,7 @@ class Event(models.Model):
             )
 
 
+# TODO create abstract invitation for: eventINV, friendsINV, groupINV
 class EventInvitation(models.Model):
     class InvitationStatus(models.TextChoices):
         ACCEPTED = "A", _("Accepted")
