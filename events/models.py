@@ -5,6 +5,8 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from recurrence.fields import RecurrenceField
 
+from users.models import UserGroup
+
 
 class Location(models.Model):
     name = models.CharField(max_length=75)
@@ -47,6 +49,13 @@ class Event(models.Model):
     )
     participants = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name="events_participant"
+    )
+    group = models.ForeignKey(
+        UserGroup,
+        default=None,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
     )
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()

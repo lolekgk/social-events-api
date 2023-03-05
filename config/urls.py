@@ -57,7 +57,7 @@ urlpatterns = [
         name="redoc",
     ),
     # dj-rest-auth endpoints
-    path("/auth/account-confirm-email/<str:key>/", ConfirmEmailView.as_view()),
+    path("auth/account-confirm-email/<str:key>/", ConfirmEmailView.as_view()),
     path("auth/register/", RegisterView.as_view()),
     path(
         "auth/verify-email/",
