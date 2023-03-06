@@ -40,10 +40,10 @@ from rest_framework_simplejwt.views import TokenVerifyView
 
 urlpatterns = [
     # apps endpoints
-    # path('messagebox/', include('messagebox.urls')),
     # path('users/', include('users.urls')),
     path("admin/", admin.site.urls),
     path("events/", include("events.urls")),
+    path("messagebox/", include("messagebox.urls")),
     # swagger endpoints
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
