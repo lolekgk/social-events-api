@@ -41,6 +41,8 @@ class Message(models.Model):
     content = models.TextField()
     date_sent = models.DateTimeField(auto_now_add=True)
     read_status = models.BooleanField(default=False)
+    deleted_by_sender = models.BooleanField(default=False)
+    deleted_by_receiver = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         sender_username = getattr(self.sender, "username", "")
