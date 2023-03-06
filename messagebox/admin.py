@@ -8,25 +8,26 @@ class MessageInline(admin.StackedInline):
     extra = 0
 
 
+# TODO make it more like users admin -> more features
+# after clicking on sender/receiver go to the related user profile
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
     list_display = [
         "id",
         "content",
-        "sender_username",
-        "receiver_username",
-        "thread",
+        "sender",
+        "receiver",
+        "thread_id",
         "date_sent",
         "read_status",
     ]
     list_filter = ["sender", "receiver"]
     search_fields = ["sender__username", "receiver__username"]
 
-    def sender_username(self, obj: Message) -> str:
-        return getattr(obj.sender, "username", "")
-
-    def receiver_username(self, obj: Message) -> str:
-        return getattr(obj.receiver, "username", "")
+    def thread_id(self, obj: Message) -> int | None:
+        if obj.thread:
+            return obj.thread.id
+        return None
 
 
 @admin.register(MessageThread)
@@ -35,7 +36,7 @@ class MessageThreadAdmin(admin.ModelAdmin):
     search_fields = ["participants__username"]
     inlines = [MessageInline]
 
-    def participants_list(self, obj) -> str:
+    def participants_list(self, obj: MessageThread) -> str:
         return ", ".join([p.username for p in obj.participants.all()])
 
     participants_list.short_description = "Participants"
