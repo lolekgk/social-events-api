@@ -8,8 +8,6 @@ User = get_user_model()
 
 class MessageSerializer(serializers.ModelSerializer):
     sender = serializers.PrimaryKeyRelatedField(read_only=True)
-    receiver = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
-    thread = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Message

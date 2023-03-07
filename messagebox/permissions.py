@@ -11,7 +11,7 @@ class MessageSenderReceiverPermission(BasePermission):
     def has_object_permission(
         self, request: Request, view: APIView, obj: Message
     ) -> bool:
-        if (obj.sender == request.user) or (obj.sender == request.user):
+        if (obj.sender == request.user) or (obj.receiver == request.user):
             return True
         return False
 

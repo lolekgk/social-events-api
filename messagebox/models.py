@@ -17,6 +17,7 @@ class MessageThread(models.Model):
         return f"Messages between: {usernames[:-len(separator)]}"
 
 
+# TODO add read_by for threads for each participant
 class Message(models.Model):
     sender = models.ForeignKey(
         settings.AUTH_USER_MODEL,
