@@ -1,4 +1,3 @@
-from django.db.models import Max
 from rest_framework import status
 from rest_framework.generics import (
     ListCreateAPIView,
@@ -66,8 +65,8 @@ class MessageDetailView(RetrieveDestroyAPIView):
 
     def retrieve(self, request: Request, *args, **kwargs) -> Response:
         instance: Message = self.get_object()
-        is_sender = request.user == instance.sender
-        is_receiver = request.user == instance.receiver
+        is_sender = request.user is instance.sender
+        is_receiver = request.user is instance.receiver
         is_deleted_by_sender = instance.deleted_by_sender and is_sender
         is_deleted_by_receiver = instance.deleted_by_receiver and is_receiver
 
@@ -102,12 +101,18 @@ class MessageThreadListView(ListCreateAPIView):
     permission_classes = [IsAuthenticated, MessageThreadParticipantPermission]
 
     def perform_create(self, serializer: MessageThreadSerializer):
-        serializer.save(participants=[self.request.user])
+        participants = serializer.validated_data.get("participants", [])
+        participants.append(self.request.user)
+        serializer.save(participants=participants)
 
-    def get_queryset(self):
-        return self.request.user.message_threads.all()
+    def get_queryset(
+        self,
+    ):  # TODO filter deleted_by_sender msg if user is sender
+        queryset = self.request.user.message_threads.all()
+        return queryset
 
 
+# TODO
 class MessageThreadDetailView(RetrieveUpdateDestroyAPIView):
     """
     GET: retrieve a message thread details.
@@ -120,3 +125,15 @@ class MessageThreadDetailView(RetrieveUpdateDestroyAPIView):
     serializer_class = MessageThreadSerializer
     queryset = MessageThread.objects.all()
     permission_classes = [IsAuthenticated, MessageThreadParticipantPermission]
+
+    def retrieve(self, request: Request, *args, **kwargs) -> Response:
+        instance: MessageThread = self.get_object()
+
+        for message in instance.messages.all():
+            if message.read_status is False:
+                message.read_status = True
+                message.save()
+            instance.save()
+
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
