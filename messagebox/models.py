@@ -22,7 +22,7 @@ class Message(models.Model):
     sender = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         null=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.SET_NULL,  # TODO
         related_name="messages_sent",
     )
     receiver = models.ForeignKey(

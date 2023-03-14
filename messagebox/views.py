@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework import status
 from rest_framework.generics import (
     ListCreateAPIView,
@@ -40,12 +41,12 @@ class MessageListView(ListCreateAPIView):
         message_direction = self.request.query_params.get(
             "msg_direction", "received"
         )
-        message_direction_filters = {
-            "sent": self.request.user.messages_sent.filter(
-                deleted_by_sender=False
+        message_direction_filters = {  # TODO fixed
+            "sent": self.queryset.filter(
+                sender=self.request.user, deleted_by_sender=False
             ),
-            "received": self.request.user.messages_received.filter(
-                deleted_by_receiver=False
+            "received": self.queryset.filter(
+                receiver=self.request.user, deleted_by_receiver=False
             ),
         }
         return message_direction_filters[message_direction]
@@ -63,23 +64,18 @@ class MessageDetailView(RetrieveDestroyAPIView):
     queryset = Message.objects.all()
     permission_classes = [IsAuthenticated, MessageSenderReceiverPermission]
 
-    def retrieve(self, request: Request, *args, **kwargs) -> Response:
-        instance: Message = self.get_object()
-        is_sender = request.user is instance.sender
-        is_receiver = request.user is instance.receiver
-        is_deleted_by_sender = instance.deleted_by_sender and is_sender
-        is_deleted_by_receiver = instance.deleted_by_receiver and is_receiver
+    def get_queryset(self):
+        return self.queryset.filter(
+            Q(sender=self.request.user, deleted_by_sender=False)
+            | Q(receiver=self.request.user, deleted_by_receiver=False)
+        )
 
-        if is_deleted_by_receiver or is_deleted_by_sender:
-            return Response(
-                data={"detail": "Not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-        if is_receiver and not instance.read_status:
-            instance.read_status = True
-            instance.save()
-
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+    def get_object(self) -> Message:
+        message: Message = super().get_object()
+        if self.request.user == message.receiver and not message.read_status:
+            message.read_status = True
+            message.save()
+        return message
 
     def perform_destroy(self, instance: Message):
         if instance.sender == self.request.user:
@@ -119,7 +115,7 @@ class MessageThreadDetailView(RetrieveUpdateDestroyAPIView):
 
     PUT: update participants of the message thread.
 
-    DELETE:
+    DELETE: delete entire message thread
     """
 
     serializer_class = MessageThreadSerializer
