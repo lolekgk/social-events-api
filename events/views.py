@@ -49,17 +49,17 @@ class EventViewSet(ModelViewSet):
     ]  # TODO filter by participants number, location(Custom filter), access(open, closed), status,
     # TODO reccurring every week, itp., check if it's possible to add searchfield to location filter
     filterset_class = EventFilter
-    ordering_fields = ['name', 'start_time']
+    ordering_fields = ["name", "start_time"]
     search_fields = [
-        'name',
-        'location__city',
-        'location__country',
-        'location__street',
+        "name",
+        "location__city",
+        "location__country",
+        "location__street",
     ]
     pagination_class = DefaultPagination
 
     def get_serializer_class(self):
-        if self.request.method == 'GET':
+        if self.request.method == "GET":
             return EventRetrieveSerializer
         return EventCreateUpdateSerializer
 
@@ -69,23 +69,23 @@ class LocationViewSet(ModelViewSet):
     # serializer_class = LocationSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = LocationFilter
-    search_fields = ['name', 'country', 'city', 'street']
-    ordering_fields = ['name', 'longitude', 'latitude']
+    search_fields = ["name", "country", "city", "street"]
+    ordering_fields = ["name", "longitude", "latitude"]
     pagination_class = DefaultPagination
 
     # def get_queryset(self):
     #     return Location.objects.all()
 
     def get_serializer_class(self):
-        if self.request.method == 'GET':
+        if self.request.method == "GET":
             return LocationRetrieveSerializer
         return LocationCreateUpdateSerializer
 
     def get_serializer_context(self):
-        return {'request': self.request}
+        return {"request": self.request}
 
     def destroy(self, request: Request, *args, **kwargs):
-        if Event.objects.filter(location_id=kwargs['pk']).count() > 0:
+        if Event.objects.filter(location_id=kwargs["pk"]).count() > 0:
             return Response(
                 {
                     "error": "Location cannot be deleted, because it is associated with an event.",

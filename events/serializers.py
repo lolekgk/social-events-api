@@ -80,7 +80,7 @@ class EventCreateUpdateSerializer(serializers.ModelSerializer):
             "recurrences",
         ]
 
-    def validate(self, attrs: dict) -> dict:  # TODO
+    def validate(self, attrs: dict) -> dict:
         instance = Event(**attrs)
         instance.clean()
         return attrs

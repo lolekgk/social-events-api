@@ -64,7 +64,7 @@ class UserAdmin(BaseUserAdmin):
     search_fields = [
         "first_name__istartswith",
         "last_name__istartswith",
-        "email__istarswith",
+        "email__istartswith",
     ]
     autocomplete_fields = ["friends"]
 
