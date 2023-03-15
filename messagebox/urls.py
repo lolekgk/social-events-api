@@ -1,17 +1,18 @@
 from django.urls import path
+from rest_framework.routers import DefaultRouter
 
 from .views import (
-    MessageDetailView,
-    MessageListView,
     MessageThreadDetailView,
     MessageThreadListView,
+    MessageViewSet,
 )
 
 app_name = "messagebox"
+router = DefaultRouter()
+router.register("", MessageViewSet, basename="messagebox")
 
 urlpatterns = [
-    path("", MessageListView.as_view(), name="message_list"),
-    path("<int:pk>/", MessageDetailView.as_view(), name="message_detail"),
+    *router.urls,
     path(
         "threads/", MessageThreadListView.as_view(), name="message_thread_list"
     ),

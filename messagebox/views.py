@@ -1,5 +1,6 @@
 from django.db.models import Q
-from rest_framework import status
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import (
     ListCreateAPIView,
     RetrieveDestroyAPIView,
@@ -8,7 +9,9 @@ from rest_framework.generics import (
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
 
+from .filters import MessageFilter
 from .models import Message, MessageThread
 from .pagination import DefaultPagination
 from .permissions import (
@@ -18,51 +21,18 @@ from .permissions import (
 from .serializers import MessageSerializer, MessageThreadSerializer
 
 
-class MessageListView(ListCreateAPIView):
-    """
-    GET: retrieve a list of current user's messages(deleted messages are ommited).
-
-    query parameters:
-        - msg_direction: sent, received (default: received)
-
-
-    POST: create and send a private/thread message.
-    """
-
+class MessageViewSet(ModelViewSet):
     serializer_class = MessageSerializer
     queryset = Message.objects.all()
     permission_classes = [IsAuthenticated, MessageSenderReceiverPermission]
     pagination_class = DefaultPagination
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_class = MessageFilter
+    search_fields = ["content", "receiver__username"]
+    ordering_fields = ["date_sent"]
 
     def perform_create(self, serializer: MessageSerializer):
         serializer.save(sender=self.request.user)
-
-    def get_queryset(self):
-        message_direction = self.request.query_params.get(
-            "msg_direction", "received"
-        )
-        message_direction_filters = {  # TODO fixed
-            "sent": self.queryset.filter(
-                sender=self.request.user, deleted_by_sender=False
-            ),
-            "received": self.queryset.filter(
-                receiver=self.request.user, deleted_by_receiver=False
-            ),
-        }
-        return message_direction_filters[message_direction]
-
-
-class MessageDetailView(RetrieveDestroyAPIView):
-    """
-    GET: retrieve user's message details.
-
-    DELETE: mark current user's message as deleted.
-
-    """
-
-    serializer_class = MessageSerializer
-    queryset = Message.objects.all()
-    permission_classes = [IsAuthenticated, MessageSenderReceiverPermission]
 
     def get_queryset(self):
         return self.queryset.filter(
