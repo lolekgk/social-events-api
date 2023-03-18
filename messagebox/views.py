@@ -35,6 +35,9 @@ class MessageViewSet(ModelViewSet):
 
     POST: Create and send a private/thread message.
 
+    PUT: Update the content of a message. Can only be done by the message sender.
+        Note: This action replaces the entire message object with the new data.
+
     PATCH: Partially update the content of a message. Can only be done by the message sender.
         Note: This action updates only the fields provided in the request data.
 
