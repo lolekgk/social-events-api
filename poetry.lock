@@ -593,19 +593,19 @@ python-dateutil = "*"
 
 [[package]]
 name = "django-stubs"
-version = "1.15.0"
+version = "1.16.0"
 description = "Mypy stubs for Django"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "django-stubs-1.15.0.tar.gz", hash = "sha256:0bbf9eb172c5b06eccff2d704c7c3906e4a2c6146df8c32ee9f3a51e29265581"},
-    {file = "django_stubs-1.15.0-py3-none-any.whl", hash = "sha256:25010658acac0ce4a69211b55dd719fd16dbfe54fcfe5c878d0c8db07bdd5482"},
+    {file = "django-stubs-1.16.0.tar.gz", hash = "sha256:1bd96207576cd220221a0e615f0259f13d453d515a80f576c1246e0fb547f561"},
+    {file = "django_stubs-1.16.0-py3-none-any.whl", hash = "sha256:c95f948e2bfc565f3147e969ff361ef033841a0b8a51cac974a6cc6d0486732c"},
 ]
 
 [package.dependencies]
 django = "*"
-django-stubs-ext = ">=0.7.0"
+django-stubs-ext = ">=0.8.0"
 mypy = ">=0.980"
 tomli = "*"
 types-pytz = "*"
@@ -613,18 +613,18 @@ types-PyYAML = "*"
 typing-extensions = "*"
 
 [package.extras]
-compatible-mypy = ["mypy (>=1.0,<1.1)"]
+compatible-mypy = ["mypy (>=1.1.1,<1.2)"]
 
 [[package]]
 name = "django-stubs-ext"
-version = "0.7.0"
+version = "0.8.0"
 description = "Monkey-patching and extensions for django-stubs"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "django-stubs-ext-0.7.0.tar.gz", hash = "sha256:4fd8cdbc68d1a421f21bb7e0d9e76d50f6a4b504d350ba786405daf536e90c21"},
-    {file = "django_stubs_ext-0.7.0-py3-none-any.whl", hash = "sha256:d729fbc7fe8970a7e26b35956c35b48502516f011d523c0577bdfb02ed956284"},
+    {file = "django-stubs-ext-0.8.0.tar.gz", hash = "sha256:9a9ba9e2808737949de96a0fce8b054f12d38e461011d77ebc074ffe8c43dfcb"},
+    {file = "django_stubs_ext-0.8.0-py3-none-any.whl", hash = "sha256:a454d349d19c26d6c50c4c6dbc1e8af4a9cda4ce1dc4104e3dd4c0330510cc56"},
 ]
 
 [package.dependencies]
@@ -674,14 +674,14 @@ test = ["cryptography", "pytest", "pytest-cov", "pytest-django", "pytest-xdist",
 
 [[package]]
 name = "djangorestframework-stubs"
-version = "1.9.1"
+version = "1.10.0"
 description = "PEP-484 stubs for django-rest-framework"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "djangorestframework-stubs-1.9.1.tar.gz", hash = "sha256:89f6c2add193cb5ab61b9e47187b33a93cc099376a8df5e4d6c3fc8ecb992d3b"},
-    {file = "djangorestframework_stubs-1.9.1-py3-none-any.whl", hash = "sha256:9475e1374b057ffbdcaaa84a060fe5f01476d8b9014d82a83b4153f57fbcbc1f"},
+    {file = "djangorestframework-stubs-1.10.0.tar.gz", hash = "sha256:69e8a1ea7eb815cbe35155c27eee72522d7c8666d3cbdacb9997ab88c7b4202c"},
+    {file = "djangorestframework_stubs-1.10.0-py3-none-any.whl", hash = "sha256:433edd7f10786914138b300b9be5aba1ebc80c471b5156934664afd7e9df9fd6"},
 ]
 
 [package.dependencies]
@@ -693,20 +693,20 @@ types-requests = ">=0.1.12"
 typing-extensions = ">=3.10.0"
 
 [package.extras]
-compatible-mypy = ["mypy (>=1.0,<1.1)"]
+compatible-mypy = ["mypy (>=1.1.1,<1.2)"]
 coreapi = ["coreapi (>=2.0.0)"]
 markdown = ["types-Markdown (>=0.1.5)"]
 
 [[package]]
 name = "drf-spectacular"
-version = "0.25.1"
+version = "0.26.0"
 description = "Sane and flexible OpenAPI 3 schema generation for Django REST framework"
 category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "drf-spectacular-0.25.1.tar.gz", hash = "sha256:789696f9845ef2397c52f66154aec6d96411baf6aa09a5d40c5f0b0e99f6b3d8"},
-    {file = "drf_spectacular-0.25.1-py3-none-any.whl", hash = "sha256:d58684e702f5ad436c5bd1735d46df0e123e64de883092d38f1debb9fa4a03c9"},
+    {file = "drf-spectacular-0.26.0.tar.gz", hash = "sha256:2b31c347c78ed7ed9f021f9e0fcf4e03e86ca6bfc43cb66401236f38f30fd46d"},
+    {file = "drf_spectacular-0.26.0-py3-none-any.whl", hash = "sha256:3c954a86fbefab93c20f3d39edab1d435f7b16c8291883e40fba5e34265ed461"},
 ]
 
 [package.dependencies]
@@ -897,14 +897,14 @@ signedtoken = ["cryptography (>=3.0.0)", "pyjwt (>=2.0.0,<3)"]
 
 [[package]]
 name = "pathspec"
-version = "0.11.0"
+version = "0.11.1"
 description = "Utility library for gitignore style pattern matching of file paths."
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "pathspec-0.11.0-py3-none-any.whl", hash = "sha256:3a66eb970cbac598f9e5ccb5b2cf58930cd8e3ed86d393d541eaf2d8b1705229"},
-    {file = "pathspec-0.11.0.tar.gz", hash = "sha256:64d338d4e0914e91c1792321e6907b5a593f1ab1851de7fc269557a21b30ebbc"},
+    {file = "pathspec-0.11.1-py3-none-any.whl", hash = "sha256:d8af70af76652554bd134c22b3e8a1cc46ed7d91edcdd721ef1a0c51a84a5293"},
+    {file = "pathspec-0.11.1.tar.gz", hash = "sha256:2798de800fa92780e33acca925945e9a19a133b715067cf165b8866c15a31687"},
 ]
 
 [[package]]
@@ -1000,14 +1000,14 @@ tests = ["check-manifest", "coverage", "defusedxml", "markdown2", "olefile", "pa
 
 [[package]]
 name = "platformdirs"
-version = "3.1.0"
+version = "3.1.1"
 description = "A small Python package for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "platformdirs-3.1.0-py3-none-any.whl", hash = "sha256:13b08a53ed71021350c9e300d4ea8668438fb0046ab3937ac9a29913a1a1350a"},
-    {file = "platformdirs-3.1.0.tar.gz", hash = "sha256:accc3665857288317f32c7bebb5a8e482ba717b474f3fc1d18ca7f9214be0cef"},
+    {file = "platformdirs-3.1.1-py3-none-any.whl", hash = "sha256:e5986afb596e4bb5bde29a79ac9061aa955b94fca2399b7aaac4090860920dd8"},
+    {file = "platformdirs-3.1.1.tar.gz", hash = "sha256:024996549ee88ec1a9aa99ff7f8fc819bb59e2c3477b410d90a16d32d6e707aa"},
 ]
 
 [package.extras]
@@ -1384,14 +1384,14 @@ files = [
 
 [[package]]
 name = "urllib3"
-version = "1.26.14"
+version = "1.26.15"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
 files = [
-    {file = "urllib3-1.26.14-py2.py3-none-any.whl", hash = "sha256:75edcdc2f7d85b137124a6c3c9fc3933cdeaa12ecb9a6a959f22797a0feca7e1"},
-    {file = "urllib3-1.26.14.tar.gz", hash = "sha256:076907bf8fd355cde77728471316625a4d2f7e713c125f51953bb5b3eecf4f72"},
+    {file = "urllib3-1.26.15-py2.py3-none-any.whl", hash = "sha256:aa751d169e23c7479ce47a0cb0da579e3ede798f994f5816a74e4f4500dcea42"},
+    {file = "urllib3-1.26.15.tar.gz", hash = "sha256:8a388717b9476f934a21484e8c8e61875ab60644d29b9b39e11e4b9dc1c6b305"},
 ]
 
 [package.extras]
@@ -1426,4 +1426,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "7aa38a847294edeec9230552a197476f379065f20a18024a734451481adf0a16"
+content-hash = "969cf492ad3216b747ecebb5aac76e029f033a3f9df58b71377a53988c314c0b"
