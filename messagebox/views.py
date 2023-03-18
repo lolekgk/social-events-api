@@ -3,7 +3,6 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import (
     ListCreateAPIView,
-    RetrieveDestroyAPIView,
     RetrieveUpdateDestroyAPIView,
 )
 from rest_framework.permissions import IsAuthenticated
@@ -17,19 +16,51 @@ from .pagination import DefaultPagination
 from .permissions import (
     MessageSenderReceiverPermission,
     MessageThreadParticipantPermission,
+    MessageUpdatePermission,
 )
-from .serializers import MessageSerializer, MessageThreadSerializer
+from .serializers import (
+    MessageContentUpdateSerializer,
+    MessageSerializer,
+    MessageThreadSerializer,
+)
 
 
 class MessageViewSet(ModelViewSet):
-    serializer_class = MessageSerializer
+    """GET (list): Retrieve a list of the current user's messages(excluding deleted messages).
+
+    Query Parameters:
+        - msg_direction: sent, received (default: received)
+
+    GET (retrieve): Retrieve the details of a specific user's message.
+
+    POST: Create and send a private/thread message.
+
+    PATCH: Partially update the content of a message. Can only be done by the message sender.
+        Note: This action updates only the fields provided in the request data.
+
+    DELETE: Mark a message as deleted for the current user.
+
+    Additional Filters:
+        - content, receiver__username for search_fields
+        - date_sent for ordering_fields
+    """
+
     queryset = Message.objects.all()
-    permission_classes = [IsAuthenticated, MessageSenderReceiverPermission]
+    permission_classes = [
+        IsAuthenticated,
+        MessageSenderReceiverPermission,
+        MessageUpdatePermission,
+    ]
     pagination_class = DefaultPagination
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = MessageFilter
     search_fields = ["content", "receiver__username"]
     ordering_fields = ["date_sent"]
+
+    def get_serializer_class(self):
+        if self.request.method in ["PUT", "PATCH"]:
+            return MessageContentUpdateSerializer
+        return MessageSerializer
 
     def perform_create(self, serializer: MessageSerializer):
         serializer.save(sender=self.request.user)

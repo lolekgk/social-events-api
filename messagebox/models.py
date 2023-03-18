@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Q
 
 
 class MessageThread(models.Model):
@@ -22,7 +23,7 @@ class Message(models.Model):
     sender = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         null=True,
-        on_delete=models.SET_NULL,  # TODO
+        on_delete=models.SET_NULL,
         related_name="messages_sent",
     )
     receiver = models.ForeignKey(
@@ -46,8 +47,8 @@ class Message(models.Model):
     deleted_by_receiver = models.BooleanField(default=False)
 
     def __str__(self) -> str:
-        sender_username = getattr(self.sender, "username", "")
-        receiver_username = getattr(self.receiver, "username", "")
+        sender_username = getattr(self.sender, "username", "delated_user")
+        receiver_username = getattr(self.receiver, "username", "delated_user")
         if self.receiver is None:
             return f"{sender_username} broadcast: {self.content}"
         return f"{sender_username} to {receiver_username}: {self.content}"
@@ -64,3 +65,12 @@ class Message(models.Model):
 
     class Meta:
         ordering = ["-date_sent"]
+        constraints = [
+            models.CheckConstraint(
+                check=(
+                    Q(thread__isnull=False) & Q(receiver__isnull=True)
+                    | Q(thread__isnull=True) & Q(receiver__isnull=False)
+                ),
+                name="thread_or_receiver_set",
+            ),
+        ]

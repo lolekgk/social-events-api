@@ -27,6 +27,12 @@ class MessageSerializer(serializers.ModelSerializer):
         return attrs
 
 
+class MessageContentUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = ["content"]
+
+
 class MessageThreadSerializer(serializers.ModelSerializer):
     participants = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(), many=True
