@@ -41,6 +41,7 @@ class AgeFilter(admin.SimpleListFilter):
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     list_display = [
+        "id",
         "username",
         "email",
         "full_name",

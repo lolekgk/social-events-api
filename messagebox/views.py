@@ -69,7 +69,6 @@ class MessageViewSet(viewsets.ModelViewSet):
         return MessageSerializer
 
     def perform_create(self, serializer: MessageSerializer):
-        # Ensure, that only a thread participant can send a thread message
         thread = serializer.validated_data.get("thread")
         if thread and self.request.user not in thread.participants.all():
             raise ValidationError(
@@ -98,8 +97,6 @@ class MessageViewSet(viewsets.ModelViewSet):
         instance.save()
 
 
-# TODO check if no participant can add a thread message
-# jesli uzytknownik nie jest w thread participants nie moze wyslac wiadomosci
 class MessageThreadListView(ListCreateAPIView):
     """
     GET: retrieve a list of current user's message threads.

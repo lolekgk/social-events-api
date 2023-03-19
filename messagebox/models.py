@@ -18,8 +18,7 @@ class MessageThread(models.Model):
         return f"Messages between: {usernames[:-len(separator)]}"
 
 
-# TODO add read_by for threads for each participant
-# TODO if it's a thread there is no deleted_by_receiver
+# TODO add read_by for threads for each participant in the future
 class Message(models.Model):
     sender = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -45,14 +44,20 @@ class Message(models.Model):
     date_sent = models.DateTimeField(auto_now_add=True)
     read_status = models.BooleanField(default=False)
     deleted_by_sender = models.BooleanField(default=False)
-    deleted_by_receiver = models.BooleanField(default=False)
+    deleted_by_receiver = models.BooleanField(default=None, null=True)
 
+    # TODO fix it -> think about how users should be deleted or maybe not
     def __str__(self) -> str:
         sender_username = getattr(self.sender, "username", "delated_user")
         receiver_username = getattr(self.receiver, "username", "delated_user")
         if self.receiver is None:
             return f"{sender_username} broadcast: {self.content}"
         return f"{sender_username} to {receiver_username}: {self.content}"
+
+    def save(self, *args, **kwargs) -> None:
+        if self.thread is None:
+            self.deleted_by_receiver = False
+        super().save(*args, **kwargs)
 
     def clean(self) -> None:
         if self.thread is None and self.receiver is None:
@@ -62,6 +67,10 @@ class Message(models.Model):
         if self.thread is not None and self.receiver is not None:
             raise ValidationError(
                 "Only one of 'thread' or 'receiver' fields can be set."
+            )
+        if self.thread is not None and self.deleted_by_receiver is not None:
+            raise ValidationError(
+                "The 'deleted_by_receiver' field cannot be set when a 'thread' is present."
             )
 
     class Meta:
@@ -73,5 +82,12 @@ class Message(models.Model):
                     | Q(thread__isnull=True) & Q(receiver__isnull=False)
                 ),
                 name="thread_or_receiver_set",
+            ),
+            models.CheckConstraint(
+                check=(
+                    Q(thread__isnull=True)
+                    | Q(deleted_by_receiver__isnull=True)
+                ),
+                name="deleted_by_receiver_null_when_thread_present",
             ),
         ]
