@@ -42,3 +42,9 @@ class MessageThreadSerializer(serializers.ModelSerializer):
     class Meta:
         model = MessageThread
         fields = ["id", "participants", "messages", "created_at"]
+
+
+class MessageThreadParticipantsUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MessageThread
+        fields = ["participants"]

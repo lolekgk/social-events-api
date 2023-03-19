@@ -1,5 +1,7 @@
-from django.db.models import Q
+from django.db.models import Prefetch, Q
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import viewsets
+from rest_framework.exceptions import ValidationError
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import (
     ListCreateAPIView,
@@ -8,7 +10,6 @@ from rest_framework.generics import (
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
 
 from .filters import MessageFilter
 from .models import Message, MessageThread
@@ -21,11 +22,12 @@ from .permissions import (
 from .serializers import (
     MessageContentUpdateSerializer,
     MessageSerializer,
+    MessageThreadParticipantsUpdateSerializer,
     MessageThreadSerializer,
 )
 
 
-class MessageViewSet(ModelViewSet):
+class MessageViewSet(viewsets.ModelViewSet):
     """GET (list): Retrieve a list of the current user's messages(excluding deleted messages).
 
     Query Parameters:
@@ -49,16 +51,17 @@ class MessageViewSet(ModelViewSet):
     """
 
     queryset = Message.objects.all()
-    permission_classes = [
-        IsAuthenticated,
-        MessageSenderReceiverPermission,
-        MessageUpdatePermission,
-    ]
     pagination_class = DefaultPagination
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = MessageFilter
     search_fields = ["content", "receiver__username"]
     ordering_fields = ["date_sent"]
+
+    def get_permissions(self):
+        permission_classes = [IsAuthenticated, MessageSenderReceiverPermission]
+        if self.request.method in ["PUT", "PATCH"]:
+            permission_classes.append(MessageUpdatePermission)
+        return [permission() for permission in permission_classes]
 
     def get_serializer_class(self):
         if self.request.method in ["PUT", "PATCH"]:
@@ -66,6 +69,12 @@ class MessageViewSet(ModelViewSet):
         return MessageSerializer
 
     def perform_create(self, serializer: MessageSerializer):
+        # Ensure, that only a thread participant can send a thread message
+        thread = serializer.validated_data.get("thread")
+        if thread and self.request.user not in thread.participants.all():
+            raise ValidationError(
+                "Only a thread participant can send a thread message."
+            )
         serializer.save(sender=self.request.user)
 
     def get_queryset(self):
@@ -89,6 +98,8 @@ class MessageViewSet(ModelViewSet):
         instance.save()
 
 
+# TODO check if no participant can add a thread message
+# jesli uzytknownik nie jest w thread participants nie moze wyslac wiadomosci
 class MessageThreadListView(ListCreateAPIView):
     """
     GET: retrieve a list of current user's message threads.
@@ -107,9 +118,13 @@ class MessageThreadListView(ListCreateAPIView):
 
     def get_queryset(
         self,
-    ):  # TODO filter deleted_by_sender msg if user is sender
-        queryset = self.request.user.message_threads.all()
-        return queryset
+    ):
+        filtered_messages = Message.objects.exclude(
+            sender=self.request.user, deleted_by_sender=True
+        )
+        return self.queryset.filter(
+            participants=self.request.user
+        ).prefetch_related(Prefetch("messages", queryset=filtered_messages))
 
 
 # TODO

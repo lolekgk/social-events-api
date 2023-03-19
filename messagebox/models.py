@@ -19,6 +19,7 @@ class MessageThread(models.Model):
 
 
 # TODO add read_by for threads for each participant
+# TODO if it's a thread there is no deleted_by_receiver
 class Message(models.Model):
     sender = models.ForeignKey(
         settings.AUTH_USER_MODEL,
