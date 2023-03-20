@@ -6,6 +6,7 @@ from django.db.models import Q
 
 # TODO add archived by participant in a future (if someone sends a new message thread will appear again)
 class MessageThread(models.Model):
+    name = models.CharField(max_length=50)
     participants = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name="message_threads"
     )
@@ -17,11 +18,7 @@ class MessageThread(models.Model):
     )
 
     def __str__(self) -> str:
-        separator = ", "
-        usernames = separator.join(
-            [participant.username for participant in self.participants.all()]
-        )
-        return f"Messages between: {usernames[:-len(separator)]}"
+        return self.name
 
 
 # TODO add read_by for thread message for each participant in the future
