@@ -25,15 +25,14 @@ class MessageThread(models.Model):
 class Message(models.Model):
     sender = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        null=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         related_name="messages_sent",
     )
     receiver = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         null=True,
         blank=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         related_name="messages_received",
     )
     thread = models.ForeignKey(
@@ -49,13 +48,10 @@ class Message(models.Model):
     deleted_by_sender = models.BooleanField(default=False)
     deleted_by_receiver = models.BooleanField(default=None, null=True)
 
-    # TODO fix it -> think about how users should be deleted or maybe not
     def __str__(self) -> str:
-        sender_username = getattr(self.sender, "username", "delated_user")
-        receiver_username = getattr(self.receiver, "username", "delated_user")
         if self.receiver is None:
-            return f"{sender_username} broadcast: {self.content}"
-        return f"{sender_username} to {receiver_username}: {self.content}"
+            return f"{self.sender.username} broadcasts: {self.content}"
+        return f"{self.sender.username} to {self.receiver.username}: {self.content}"
 
     def save(self, *args, **kwargs) -> None:
         if self.thread is None:
