@@ -1,4 +1,5 @@
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.request import Request
@@ -14,30 +15,6 @@ from .serializers import (
     LocationCreateUpdateSerializer,
     LocationRetrieveSerializer,
 )
-
-
-class EventOrganizerListView:
-    pass
-
-
-class EventOrganizerDetailView:
-    pass
-
-
-class EventParticipantListView:
-    pass
-
-
-class EventParticipantDetailView:
-    pass
-
-
-class EventInvitationListView:
-    pass
-
-
-class EventIvitationDetailView:
-    pass
 
 
 class EventViewSet(ModelViewSet):
@@ -64,6 +41,7 @@ class EventViewSet(ModelViewSet):
         return EventCreateUpdateSerializer
 
 
+@extend_schema(tags=["locations"])
 class LocationViewSet(ModelViewSet):
     queryset = Location.objects.all()
     # serializer_class = LocationSerializer
@@ -97,3 +75,27 @@ class LocationViewSet(ModelViewSet):
 
 # * should I display an events in location? or it's better to add nested location to an event
 # * how to integrate with a 'map' service to set a location
+
+
+class EventOrganizerListView:
+    pass
+
+
+class EventOrganizerDetailView:
+    pass
+
+
+class EventParticipantListView:
+    pass
+
+
+class EventParticipantDetailView:
+    pass
+
+
+class EventInvitationListView:
+    pass
+
+
+class EventIvitationDetailView:
+    pass
