@@ -17,7 +17,7 @@ class User(AbstractUser):
         return f"{self.first_name} {self.last_name} ({self.username})"
 
     class Meta:
-        ordering = ["email"]
+        ordering = ["username"]
 
 
 class UserGroup(models.Model):
