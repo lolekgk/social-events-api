@@ -97,16 +97,16 @@ class MessageViewSet(viewsets.ModelViewSet):
         instance.save()
 
 
-class MessageThreadListView(ListCreateAPIView):
-    """
-    GET: retrieve a list of current user's message threads.
+class MessageThreadViewSet(viewsets.ModelViewSet):
 
-    POST: create a new message thread with current user and selected user's.
-    """
-
-    serializer_class = MessageThreadSerializer
     queryset = MessageThread.objects.all()
     permission_classes = [IsAuthenticated, MessageThreadParticipantPermission]
+    pagination_class = DefaultPagination
+
+    def get_serializer_class(self):
+        if self.request.method in ["PUT", "PATCH"]:
+            return MessageThreadParticipantsUpdateSerializer
+        return MessageThreadSerializer
 
     def perform_create(self, serializer: MessageThreadSerializer):
         participants = serializer.validated_data.get("participants", [])
@@ -123,29 +123,13 @@ class MessageThreadListView(ListCreateAPIView):
             participants=self.request.user
         ).prefetch_related(Prefetch("messages", queryset=filtered_messages))
 
-
-# TODO
-class MessageThreadDetailView(RetrieveUpdateDestroyAPIView):
-    """
-    GET: retrieve a message thread details.
-
-    PUT: update participants of the message thread.
-
-    DELETE: delete entire message thread
-    """
-
-    serializer_class = MessageThreadSerializer
-    queryset = MessageThread.objects.all()
-    permission_classes = [IsAuthenticated, MessageThreadParticipantPermission]
-
     def retrieve(self, request: Request, *args, **kwargs) -> Response:
         instance: MessageThread = self.get_object()
-
-        for message in instance.messages.all():
-            if message.read_status is False:
-                message.read_status = True
-                message.save()
-            instance.save()
-
+        unread_messages = instance.messages.filter(read_status=False)
+        unread_messages.update(read_status=True)
+        instance.save()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
+
+
+# TODO think about how should DELETE work, maybe add another soft flag

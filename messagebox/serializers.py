@@ -45,6 +45,10 @@ class MessageThreadSerializer(serializers.ModelSerializer):
 
 
 class MessageThreadParticipantsUpdateSerializer(serializers.ModelSerializer):
+    participants = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), many=True
+    )
+
     class Meta:
         model = MessageThread
         fields = ["participants"]
