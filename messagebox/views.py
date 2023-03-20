@@ -1,15 +1,10 @@
 from django.db.models import Prefetch, Q
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.filters import OrderingFilter, SearchFilter
-from rest_framework.generics import (
-    ListCreateAPIView,
-    RetrieveUpdateDestroyAPIView,
-)
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.request import Request
-from rest_framework.response import Response
 
 from .filters import MessageFilter
 from .models import Message, MessageThread
@@ -28,7 +23,8 @@ from .serializers import (
 
 
 class MessageViewSet(viewsets.ModelViewSet):
-    """GET (list): Retrieve a list of the current user's messages(excluding deleted messages).
+    """
+    GET (list): Retrieve a list of the current user's messages(excluding deleted messages).
 
     Query Parameters:
         - msg_direction: sent, received (default: received)
@@ -97,11 +93,32 @@ class MessageViewSet(viewsets.ModelViewSet):
         instance.save()
 
 
+@extend_schema(tags=["threads"])
 class MessageThreadViewSet(viewsets.ModelViewSet):
+    """
+    GET (retrieve): Retrieve the details of a specific message thread, including it's messages.
+
+    POST: Create a new message thread with the specified participants.
+
+    PUT: Update the participants of a message thread.
+        Note: This action replaces the entire participant list with the new data.
+
+    PATCH: Partially update the participants of a message thread.
+        Note: This action updates only the fields provided in the request data.
+
+    DELETE: Mark a message thread as deleted for the current user.
+
+    Additional Filters:
+        - messages__content, participants__username for search_fields
+        - created_at for ordering_fields
+    """
 
     queryset = MessageThread.objects.all()
     permission_classes = [IsAuthenticated, MessageThreadParticipantPermission]
     pagination_class = DefaultPagination
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ["messages__content", "participants__username"]
+    ordering_fields = ["created_at"]
 
     def get_serializer_class(self):
         if self.request.method in ["PUT", "PATCH"]:
@@ -119,17 +136,19 @@ class MessageThreadViewSet(viewsets.ModelViewSet):
         filtered_messages = Message.objects.exclude(
             sender=self.request.user, deleted_by_sender=True
         )
-        return self.queryset.filter(
-            participants=self.request.user
-        ).prefetch_related(Prefetch("messages", queryset=filtered_messages))
+        return (
+            self.queryset.filter(participants=self.request.user)
+            .exclude(deleted_by_users=self.request.user)
+            .prefetch_related(Prefetch("messages", queryset=filtered_messages))
+        )
 
-    def retrieve(self, request: Request, *args, **kwargs) -> Response:
-        instance: MessageThread = self.get_object()
-        unread_messages = instance.messages.filter(read_status=False)
-        unread_messages.update(read_status=True)
+    def get_object(self) -> MessageThread:
+        message_thread: MessageThread = super().get_object()
+        message_thread.messages.filter(read_status=False).update(
+            read_status=True
+        )
+        return message_thread
+
+    def perform_destroy(self, instance: MessageThread) -> None:
+        instance.deleted_by_users.add(self.request.user)
         instance.save()
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
-
-
-# TODO think about how should DELETE work, maybe add another soft flag
