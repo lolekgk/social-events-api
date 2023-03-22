@@ -40,7 +40,7 @@ from rest_framework_simplejwt.views import TokenVerifyView
 
 urlpatterns = [
     # apps endpoints
-    # path('users/', include('users.urls')),
+    path("users/", include("users.urls")),
     path("admin/", admin.site.urls),
     path("events/", include("events.urls")),
     path("messagebox/", include("messagebox.urls")),

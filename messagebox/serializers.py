@@ -28,6 +28,8 @@ class MessageSerializer(serializers.ModelSerializer):
 
 
 class MessageContentUpdateSerializer(serializers.ModelSerializer):
+    """Limits editable fields to content only."""
+
     class Meta:
         model = Message
         fields = ["content"]
@@ -45,6 +47,8 @@ class MessageThreadSerializer(serializers.ModelSerializer):
 
 
 class MessageThreadParticipantsUpdateSerializer(serializers.ModelSerializer):
+    """Limits editable fields to participants only."""
+
     participants = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(), many=True
     )
