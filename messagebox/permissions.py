@@ -22,9 +22,9 @@ class MessageUpdatePermission(permissions.BasePermission):
     def has_object_permission(
         self, request: Request, view: APIView, obj: Message
     ) -> bool:
-        if request.method in ["PUT", "PATCH"] and obj.sender == request.user:
-            return True
-        return False
+        if request.method in ["PUT", "PATCH"]:
+            return obj.sender == request.user
+        return True
 
 
 class MessageThreadParticipantPermission(permissions.BasePermission):

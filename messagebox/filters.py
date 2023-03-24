@@ -13,11 +13,12 @@ class MessageFilter(FilterSet):
 
     def filter_message_direction(self, queryset, name, value):
         user = self.request.user
-        if value == "sent":
-            return queryset.filter(sender=user, deleted_by_sender=False)
-        elif value == "received":
-            return queryset.filter(receiver=user, deleted_by_receiver=False)
-        return queryset.filter(
-            Q(sender=user, deleted_by_sender=False)
-            | Q(receiver=user, deleted_by_receiver=False)
+        sent_filter = Q(sender=user, deleted_by_sender=False)
+        received_filter = Q(receiver=user, deleted_by_receiver=False)
+        filter_conditions = {
+            "sent": queryset.filter(sent_filter),
+            "received": queryset.filter(received_filter),
+        }
+        return filter_conditions.get(
+            value, queryset.filter(sent_filter | received_filter)
         )

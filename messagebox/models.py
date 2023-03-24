@@ -46,7 +46,9 @@ class Message(models.Model):
     date_sent = models.DateTimeField(auto_now_add=True)
     read_status = models.BooleanField(default=False)
     deleted_by_sender = models.BooleanField(default=False)
-    deleted_by_receiver = models.BooleanField(default=None, null=True)
+    deleted_by_receiver = models.BooleanField(
+        default=None, null=True, blank=True
+    )
 
     def __str__(self) -> str:
         if self.receiver is None:

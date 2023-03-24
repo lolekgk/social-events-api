@@ -48,16 +48,15 @@ class MessageViewSet(viewsets.ModelViewSet):
 
     queryset = Message.objects.all()
     pagination_class = DefaultPagination
+    permission_classes = [
+        IsAuthenticated,
+        MessageSenderReceiverPermission,
+        MessageUpdatePermission,
+    ]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = MessageFilter
     search_fields = ["content", "receiver__username"]
     ordering_fields = ["date_sent"]
-
-    def get_permissions(self):
-        permission_classes = [IsAuthenticated, MessageSenderReceiverPermission]
-        if self.request.method in ["PUT", "PATCH"]:
-            permission_classes.append(MessageUpdatePermission)
-        return [permission() for permission in permission_classes]
 
     def get_serializer_class(self):
         if self.request.method in ["PUT", "PATCH"]:
