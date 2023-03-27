@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-02 23:34+0100\n"
+"POT-Creation-Date: 2023-03-27 19:37+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,38 +17,46 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-#: models.py:31
-msgid "Planned"
-msgstr "Programmé"
 
-#: models.py:32
-msgid "Ongoing"
-msgstr "En cours"
-
-#: models.py:33
-msgid "Cancelled"
-msgstr "Annulé"
-
-#: models.py:34
-msgid "Ended"
-msgstr "Terminé"
-
-#: models.py:37
+#: events/constants.py:6
 msgid "Open"
 msgstr "Ouvert"
 
-#: models.py:38
-msgid "Invitation"
-msgstr "Ouvert"
+#: events/constants.py:7
+msgid "Private"
+msgstr "Privé"
 
-#: models.py:83
+#: events/constants.py:8
+msgid "Group"
+msgstr "Groupe"
+
+#: events/constants.py:12
+msgid "Planned"
+msgstr "Programmé"
+
+#: events/constants.py:13
+msgid "Ongoing"
+msgstr "En cours"
+
+#: events/constants.py:14
+msgid "Cancelled"
+msgstr "Annulé"
+
+#: events/constants.py:15
+msgid "Ended"
+msgstr "Terminé"
+
+#: events/models.py:80
 msgid "Accepted"
 msgstr "Accepté"
 
-#: models.py:84
+#: events/models.py:81
 msgid "Declined"
 msgstr "Rejeté"
 
-#: models.py:85
+#: events/models.py:82
 msgid "Pending"
 msgstr "En attente"
+
+#~ msgid "Invitation"
+#~ msgstr "Ouvert"
