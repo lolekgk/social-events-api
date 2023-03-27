@@ -20,9 +20,18 @@ class MessageThread(models.Model):
     def __str__(self) -> str:
         return self.name
 
+    def perform_soft_delete(self, user):
+        self.deleted_by_users.add(user)
+        self.save()
+
 
 # TODO add read_by for thread message for each participant in the future
 class Message(models.Model):
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        if self.thread is None and self.deleted_by_receiver is None:
+            self.deleted_by_receiver = False
+
     sender = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
@@ -56,8 +65,13 @@ class Message(models.Model):
         return f"{self.sender.username} to {self.receiver.username}: {self.content}"
 
     def save(self, *args, **kwargs) -> None:
-        if self.thread is None:
-            self.deleted_by_receiver = False
+        if (
+            self.thread is not None
+            and self.sender not in self.thread.participants.all()
+        ):
+            raise ValidationError(
+                "Only a thread participant can send a thread message."
+            )
         super().save(*args, **kwargs)
 
     def clean(self) -> None:
@@ -73,6 +87,13 @@ class Message(models.Model):
             raise ValidationError(
                 "The 'deleted_by_receiver' field cannot be set when a 'thread' is present."
             )
+
+    def perform_soft_delete(self, user):
+        if user == self.sender:
+            self.deleted_by_sender = True
+        else:
+            self.deleted_by_receiver = True
+        self.save()
 
     class Meta:
         ordering = ["-date_sent"]
