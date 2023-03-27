@@ -7,6 +7,8 @@ from recurrence.fields import RecurrenceField
 
 from users.models import UserGroup
 
+from .constants import EventStatus, EventType
+
 
 class Location(models.Model):
     name = models.CharField(max_length=75)
@@ -26,21 +28,10 @@ class Location(models.Model):
         return self.name
 
 
-# TODO statusy poza modelem
 class Event(models.Model):
-    class EventStatus(models.TextChoices):
-        PLANNED = "P", _("Planned")
-        ONGOING = "O", _("Ongoing")
-        CANCELLED = "C", _("Cancelled")
-        ENDED = "E", _("Ended")
-
-    class EventAccess(models.TextChoices):
-        OPEN = "O", _("Open")
-        INVITATION = "I", _("Invitation")
-
     name = models.CharField(max_length=255)
-    access = models.CharField(
-        choices=EventAccess.choices, max_length=1, default=EventAccess.OPEN
+    type = models.CharField(
+        choices=EventType.choices, max_length=1, default=EventType.OPEN
     )
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -72,9 +63,6 @@ class Event(models.Model):
         blank=True,
     )
     recurrences = RecurrenceField(blank=True, null=True)
-    # recurring events
-    # https://django-recurrence.readthedocs.io/en/latest/index.html
-    # group ? foreign key to the group of friends(users)
 
     def __str__(self) -> str:
         return self.name
