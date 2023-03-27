@@ -116,7 +116,7 @@ class MessageThreadViewSet(viewsets.ModelViewSet):
             return MessageThreadParticipantsUpdateSerializer
         return MessageThreadSerializer
 
-    def perform_create(self, serializer: MessageThreadSerializer):
+    def perform_create(self, serializer: BaseSerializer):
         participants = serializer.validated_data.get("participants", [])
         participants.append(self.request.user)
         serializer.save(participants=participants)
@@ -141,5 +141,4 @@ class MessageThreadViewSet(viewsets.ModelViewSet):
         return message_thread
 
     def perform_destroy(self, instance: MessageThread) -> None:
-        instance.deleted_by_users.add(self.request.user)
-        instance.save()
+        instance.perform_soft_delete(self.request.user)

@@ -20,6 +20,10 @@ class MessageThread(models.Model):
     def __str__(self) -> str:
         return self.name
 
+    def perform_soft_delete(self, user):
+        self.deleted_by_users.add(user)
+        self.save()
+
 
 # TODO add read_by for thread message for each participant in the future
 class Message(models.Model):
