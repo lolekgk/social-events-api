@@ -56,6 +56,13 @@ class Message(models.Model):
         return f"{self.sender.username} to {self.receiver.username}: {self.content}"
 
     def save(self, *args, **kwargs) -> None:
+        if (
+            self.thread is not None
+            and self.sender not in self.thread.participants.all()
+        ):
+            raise ValidationError(
+                "Only a thread participant can send a thread message."
+            )
         if self.thread is None:
             self.deleted_by_receiver = False
         super().save(*args, **kwargs)

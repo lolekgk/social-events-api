@@ -64,11 +64,6 @@ class MessageViewSet(viewsets.ModelViewSet):
         return MessageSerializer
 
     def perform_create(self, serializer: MessageSerializer):
-        thread = serializer.validated_data.get("thread")
-        if thread and self.request.user not in thread.participants.all():
-            raise ValidationError(
-                "Only a thread participant can send a thread message."
-            )
         serializer.save(sender=self.request.user)
 
     def get_queryset(self):
