@@ -5,6 +5,7 @@ from rest_framework import viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.serializers import BaseSerializer
 
 from .filters import MessageFilter
 from .models import Message, MessageThread
@@ -63,7 +64,7 @@ class MessageViewSet(viewsets.ModelViewSet):
             return MessageContentUpdateSerializer
         return MessageSerializer
 
-    def perform_create(self, serializer: MessageSerializer):
+    def perform_create(self, serializer: BaseSerializer):
         serializer.save(sender=self.request.user)
 
     def get_queryset(self):
@@ -80,11 +81,7 @@ class MessageViewSet(viewsets.ModelViewSet):
         return message
 
     def perform_destroy(self, instance: Message):
-        if instance.sender == self.request.user:
-            instance.deleted_by_sender = True
-        else:
-            instance.deleted_by_receiver = True
-        instance.save()
+        instance.perform_soft_delete(self.request.user)
 
 
 @extend_schema(tags=["threads"])
