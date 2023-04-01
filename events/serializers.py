@@ -47,7 +47,7 @@ class EventRetrieveSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "name",
-            "access",
+            "type",
             "description",
             "created_at",
             "organizers",  # TODO add nested user models?
@@ -71,7 +71,7 @@ class EventCreateUpdateSerializer(serializers.ModelSerializer):
         model = Event
         fields = [
             "name",
-            "access",
+            "type",
             "banner",
             "description",
             "start_time",
