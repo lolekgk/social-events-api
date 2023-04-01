@@ -1,31 +1,30 @@
 from rest_framework import viewsets
-from rest_framework.generics import RetrieveUpdateDestroyAPIView
 
 from .models import User
 from .permissions import UserOwnProfileOrReadOnly
-from .serializers import (
-    UserOwnProfileRetrieveSerializer,
-    UserOwnProfileUpdateSerializer,
-    UserPublicProfileSerializer,
-)
+from .serializers import UserOwnProfileSerializer, UserPublicProfileSerializer
 
 
-class UserDetailView(RetrieveUpdateDestroyAPIView):
+class UserViewSet(viewsets.ModelViewSet):
     """
-    GET: Retrieve user's profile.
+    GET(retrieve): Retrieve user's profile.
 
     PUT/PATCH: Update current user's profile.
+
+    DELETE: Mark current user's profile as not active.
     """
 
     queryset = User.objects.all()
     permission_classes = [UserOwnProfileOrReadOnly]
 
     def get_serializer_class(self):
-        if self.kwargs["pk"] != self.request.user.pk:
-            return UserPublicProfileSerializer
-        if self.request.method in ["PUT", "PATCH"]:
-            return UserOwnProfileUpdateSerializer
-        return UserOwnProfileRetrieveSerializer
+        serializer_classes = {
+            "list": UserPublicProfileSerializer,
+            "retrieve": UserOwnProfileSerializer
+            if self.get_object().pk == self.request.user.pk
+            else UserPublicProfileSerializer,
+        }
+        return serializer_classes.get(self.action, UserOwnProfileSerializer)
 
     def perform_destroy(self, instance: User) -> None:
         instance.is_active = False

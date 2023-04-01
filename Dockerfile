@@ -20,7 +20,7 @@ WORKDIR /app
 COPY --from=requirements-stage /tmp/requirements.txt /app/requirements.txt
 
 RUN apt-get update \
-  # dependencies for building Python packages, psycopg2, translations
+  # dependencies for building Python packages, psycopg2
   && apt-get install -y build-essential libpq-dev \
   # cleaning up unused files
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
@@ -30,12 +30,6 @@ RUN apt-get update \
 
 COPY . /app/
 
-EXPOSE 8000
+RUN chmod 111 ./entrypoint.sh
 
-ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.7.3/wait /wait
-
-RUN chmod +x /wait
-
-# USER ${APP_USER}
-
-CMD /wait
+USER ${APP_USER}
