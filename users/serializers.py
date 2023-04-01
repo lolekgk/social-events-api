@@ -3,7 +3,16 @@ from rest_framework import serializers
 from .models import User, UserGroup
 
 
-class UserPublicProfileSerializer(serializers.ModelSerializer):
+class UserProfileSerializer(serializers.ModelSerializer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        request = self.context["request"]
+
+        if not (
+            request.user.is_authenticated and request.user == self.instance
+        ):
+            self.fields.pop("email")
+
     class Meta:
         model = User
         fields = [
@@ -14,11 +23,6 @@ class UserPublicProfileSerializer(serializers.ModelSerializer):
             "profile_picture",
             "birth_date",
             "friends",
+            "email",
         ]
-
-
-class UserOwnProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = UserPublicProfileSerializer.Meta.fields + ["email"]
         read_only_fields = ["id", "username", "email"]
