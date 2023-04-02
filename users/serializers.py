@@ -11,6 +11,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
         if not (
             request.user.is_authenticated and request.user == self.instance
         ):
+            # TODO add group_member, and group_admin
+
             self.fields.pop("email")
 
     class Meta:
@@ -26,3 +28,17 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "email",
         ]
         read_only_fields = ["id", "username", "email"]
+
+
+class UserGroupSerializer(serializers.ModelSerializer):
+    administrators = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), many=True
+    )
+    members = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), many=True
+    )
+
+    class Meta:
+        model = UserGroup
+        fields = ["id", "name", "description", "administrators", "members"]
+        read_only_fields = ["id"]
