@@ -11,7 +11,7 @@
 
 ## About the project
 
-Social Events API is a backend application that allows users to create and manage events for their group of friends. The API endpoints can be used with a matching frontend or accessed through an HTTP client (e.g. curl, Postman).
+Social Events API is a backend application that allows users to create and manage events for their group of friends. The API endpoints can be used with a matching frontend or accessed through HTTP client (e.g. Postman, curl).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
