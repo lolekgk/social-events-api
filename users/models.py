@@ -25,6 +25,15 @@ class UserGroup(models.Model):
     description = models.TextField(blank=True, null=True)
     administrators = models.ManyToManyField(User, related_name="groups_admin")
     members = models.ManyToManyField(User, related_name="groups_member")
+    is_deleted = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return self.name
+
+
+class FriendInvitation:
+    ...
+
+
+class GroupInvitation:
+    ...

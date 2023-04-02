@@ -17,3 +17,10 @@ class UserOwnProfileOrReadOnly(permissions.BasePermission):
         ):
             return True
         return False
+
+
+class UserGroupPermission(permissions.BasePermission):
+    def has_object_permission(
+        self, request: Request, view: APIView, obj: UserGroup
+    ) -> bool:
+        return super().has_object_permission(request, view, obj)
