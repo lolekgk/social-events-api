@@ -46,7 +46,6 @@ class MessageViewSet(viewsets.ModelViewSet):
         - date_sent for ordering_fields
     """
 
-    queryset = Message.objects.all()
     pagination_class = DefaultPagination
     permission_classes = [
         IsAuthenticated,
@@ -67,7 +66,7 @@ class MessageViewSet(viewsets.ModelViewSet):
         serializer.save(sender=self.request.user)
 
     def get_queryset(self):
-        return self.queryset.filter(
+        return Message.objects.filter(
             Q(sender=self.request.user, deleted_by_sender=False)
             | Q(receiver=self.request.user, deleted_by_receiver=False)
         )
@@ -103,7 +102,6 @@ class MessageThreadViewSet(viewsets.ModelViewSet):
         - created_at for ordering_fields
     """
 
-    queryset = MessageThread.objects.all()
     permission_classes = [IsAuthenticated, MessageThreadParticipantPermission]
     pagination_class = DefaultPagination
     filter_backends = [SearchFilter, OrderingFilter]
@@ -127,7 +125,7 @@ class MessageThreadViewSet(viewsets.ModelViewSet):
             sender=self.request.user, deleted_by_sender=True
         )
         return (
-            self.queryset.filter(participants=self.request.user)
+            MessageThread.objects.filter(participants=self.request.user)
             .exclude(deleted_by_users=self.request.user)
             .prefetch_related(Prefetch("messages", queryset=filtered_messages))
         )
