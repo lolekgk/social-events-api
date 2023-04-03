@@ -26,6 +26,6 @@ class UserGroupPermission(permissions.BasePermission):
     def has_object_permission(
         self, request: Request, view: APIView, obj: UserGroup
     ) -> bool:
-        if request.user in obj.members.all():
-            return request.method in permissions.SAFE_METHODS
-        return request.user in obj.administrators.all()
+        if request.user in obj.administrators.all():
+            return True
+        return request.method in permissions.SAFE_METHODS

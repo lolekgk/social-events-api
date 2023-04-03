@@ -12,7 +12,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
             request.user.is_authenticated and request.user == self.instance
         ):
             # TODO add group_member, and group_admin
-
             self.fields.pop("email")
 
     class Meta:
