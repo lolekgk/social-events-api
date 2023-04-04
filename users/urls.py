@@ -1,11 +1,12 @@
-from django.urls import path
-from rest_framework.routers import DefaultRouter
+from rest_framework_nested.routers import DefaultRouter, NestedDefaultRouter
 
-from .views import UserViewSet
+from .views import UserGroupViewSet, UserViewSet
 
 app_name = "users"
 
 router = DefaultRouter()
 router.register("", UserViewSet, basename="users")
+users_router = NestedDefaultRouter(router, "", lookup="user")
+users_router.register("groups", UserGroupViewSet, basename="user-groups")
 
-urlpatterns = router.urls
+urlpatterns = router.urls + users_router.urls

@@ -16,6 +16,10 @@ class User(AbstractUser):
     def __str__(self) -> str:
         return f"{self.first_name} {self.last_name} ({self.username})"
 
+    def perform_soft_delete(self):
+        self.is_active = False
+        self.save()
+
     class Meta:
         ordering = ["username"]
 
@@ -25,6 +29,19 @@ class UserGroup(models.Model):
     description = models.TextField(blank=True, null=True)
     administrators = models.ManyToManyField(User, related_name="groups_admin")
     members = models.ManyToManyField(User, related_name="groups_member")
+    is_deleted = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return self.name
+
+    def perform_soft_delete(self):
+        self.is_deleted = True
+        self.save()
+
+
+class FriendInvitation:
+    ...
+
+
+class GroupInvitation:
+    ...
