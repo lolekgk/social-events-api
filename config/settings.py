@@ -215,6 +215,10 @@ AUTHENTICATION_BACKENDS = [
 
 AUTH_USER_MODEL = "users.User"
 
+# Celery settings
+CELERY_BROKER_URL = os.environ.get("BOKER_URL")
+CELERY_TIMEZONE = "Europe/Warsaw"
+
 if DEBUG:
     # debug_toolbar
     INSTALLED_APPS.append("debug_toolbar")
