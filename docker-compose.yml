@@ -11,13 +11,6 @@ services:
         env_file:
             - .env
         entrypoint: bash -c './entrypoint.sh'
-        environment:
-            - DATABASE_URL=postgres://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@postgres_db/${POSTGRES_DB}
-            - BROKER_URL=${BROKER_URL}
-            - DEBUG=${DEBUG}
-            - SECRET_KEY=${SECRET_KEY}
-            - EMAIL_HOST_USER = ${EMAIL_HOST_USER}
-            - EMAIL_HOST_PASSWORD = ${EMAIL_HOST_PASSWORD}
         volumes:
             - .:/app
         depends_on:
@@ -33,10 +26,6 @@ services:
         restart: on-failure
         env_file:
             - .env
-        environment:
-            POSTGRES_USER: ${POSTGRES_USERNAME}
-            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-            POSTGRES_DB: ${POSTGRES_DB}
         volumes:
             - db_data:/var/lib/postgresql/data
         ports:
@@ -45,7 +34,7 @@ services:
             test:
                 [
                     'CMD-SHELL',
-                    'pg_isready -U ${POSTGRES_USERNAME} -d ${POSTGRES_DB}',
+                    'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}',
                 ]
             interval: 5s
             timeout: 3s
@@ -70,12 +59,8 @@ services:
             context: .
             dockerfile: Dockerfile
         command: 'celery -A config worker --loglevel=info'
-        volumes:
-            - .:/app
         env_file:
             - .env
-        environment:
-            - BROKER_URL=${BROKER_URL}
         depends_on:
             redis:
                 condition: service_healthy
@@ -86,9 +71,6 @@ services:
         restart: unless-stopped
         env_file:
             - .env
-        environment:
-            PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
-            PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
         depends_on:
             - postgres_db
         volumes:
