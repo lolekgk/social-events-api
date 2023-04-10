@@ -34,9 +34,6 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return User.objects.filter(is_active=True)
 
-    def perform_destroy(self, instance: User) -> None:
-        instance.perform_soft_delete()
-
 
 @extend_schema(tags=["user groups"])
 class UserGroupViewSet(viewsets.ModelViewSet):
@@ -66,13 +63,3 @@ class UserGroupViewSet(viewsets.ModelViewSet):
                 Prefetch("administrators", queryset=filtered_users),
             )
         )
-
-    def perform_destroy(self, instance: UserGroup) -> None:
-        instance.perform_soft_delete()
-
-
-# * What should happen with a group if the only one admin deletes a profile
-
-# TODO add current user friends list view with min. user info?
-# TODO friends_invitation, group invitation
-# TODO invitation list and detail view
