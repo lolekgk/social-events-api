@@ -16,7 +16,7 @@ class User(AbstractUser):
     def __str__(self) -> str:
         return f"{self.first_name} {self.last_name} ({self.username})"
 
-    def perform_soft_delete(self):
+    def delete(self, *args, **kwargs):
         self.is_active = False
         self.save()
 
@@ -34,8 +34,8 @@ class UserGroup(models.Model):
     def __str__(self) -> str:
         return self.name
 
-    def perform_soft_delete(self):
-        self.is_deleted = True
+    def delete(self, *args, **kwargs):
+        self.is_active = False
         self.save()
 
 

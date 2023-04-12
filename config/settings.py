@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     "events",
     "users",
     "messagebox",
+    "invitations",
 ]
 
 MIDDLEWARE = [

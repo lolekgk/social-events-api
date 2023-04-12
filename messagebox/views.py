@@ -118,9 +118,7 @@ class MessageThreadViewSet(viewsets.ModelViewSet):
         participants.append(self.request.user)
         serializer.save(participants=participants)
 
-    def get_queryset(
-        self,
-    ):
+    def get_queryset(self):
         filtered_messages = Message.objects.exclude(
             sender=self.request.user, deleted_by_sender=True
         )
