@@ -23,6 +23,7 @@ django-allauth = "^0.52.0"
 djangorestframework-simplejwt = "^5.2.2"
 drf-spectacular = "^0.26.0"
 drf-nested-routers = "^0.93.4"
+pytest-cov = "^4.0.0"
 
 
 [tool.poetry.group.dev.dependencies]
