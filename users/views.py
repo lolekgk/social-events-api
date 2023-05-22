@@ -36,7 +36,6 @@ class UserViewSet(viewsets.ModelViewSet):
         return User.objects.filter(is_active=True)
 
 
-# TODO avoid creating usergroup with inactive users as a members and administrators
 @extend_schema(tags=["user groups"])
 class UserGroupViewSet(viewsets.ModelViewSet):
     """
@@ -59,8 +58,24 @@ class UserGroupViewSet(viewsets.ModelViewSet):
     ordering_fields = ["name"]
 
     def create(self, request: Request, *args, **kwargs) -> Response:
-        request.data["members"].append(request.user.id)
-        request.data["administrators"].append(request.user.id)
+        members_ids = request.data["members"]
+        administrators_ids = request.data["administrators"]
+
+        active_members_ids = list(
+            User.objects.filter(
+                id__in=members_ids, is_active=True
+            ).values_list("id", flat=True)
+        )
+        active_administrators_ids = list(
+            User.objects.filter(
+                id__in=administrators_ids, is_active=True
+            ).values_list("id", flat=True)
+        )
+
+        active_members_ids.append(request.user.id)
+        active_administrators_ids.append(request.user.id)
+        request.data["members"] = active_members_ids
+        request.data["administrators"] = active_administrators_ids
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)

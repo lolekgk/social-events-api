@@ -94,13 +94,12 @@ class TestCreateUserGroup:
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
-    # TODO uncomment it after adding this functionality
     def test_create_user_group_with_invalid_data_not_active_user_as_member(
         self, api_client: APIClient
     ) -> None:
         user = baker.make(User, pk=1)
-        not_active_user = baker.make(User, pk=2, is_active=False)
         api_client.force_authenticate(user)
+        not_active_user = baker.make(User, pk=2, is_active=False)
         invalid_payload = {
             "name": "test_name",
             "description": "test_description",
@@ -112,14 +111,21 @@ class TestCreateUserGroup:
             path="/users/1/groups/", data=invalid_payload, format="json"
         )
 
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.status_code == status.HTTP_201_CREATED
+
+        user_group = UserGroup.objects.get(id=response.data["id"])
+
+        assert user_group is not None
+        assert user in user_group.administrators.all()
+        assert user in user_group.members.all()
+        assert not_active_user not in user_group.members.all()
 
     def test_create_user_group_with_invalid_data_not_active_user_as_administrator(
         self, api_client: APIClient
     ) -> None:
         user = baker.make(User, pk=1)
-        not_active_user = baker.make(User, pk=2, is_active=False)
         api_client.force_authenticate(user)
+        not_active_user = baker.make(User, pk=2, is_active=False)
         invalid_payload = {
             "name": "test_name",
             "description": "test_description",
@@ -131,18 +137,27 @@ class TestCreateUserGroup:
             path="/users/1/groups/", data=invalid_payload, format="json"
         )
 
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.status_code == status.HTTP_201_CREATED
+
+        user_group = UserGroup.objects.get(id=response.data["id"])
+
+        assert user_group is not None
+        assert user in user_group.administrators.all()
+        assert user in user_group.members.all()
+        assert not_active_user not in user_group.administrators.all()
 
     def test_create_user_group_with_valid_data(
         self, api_client: APIClient, usergroup_payload
     ) -> None:
         user = baker.make(User, pk=1)
+
         api_client.force_authenticate(user)
+        usergroup_payload["members"] = [1, 2]
+        usergroup_payload["administrators"] = [1, 2]
 
         response = api_client.post(
             path="/users/1/groups/", data=usergroup_payload, format="json"
         )
-
         assert response.status_code == status.HTTP_201_CREATED
 
         user_group = UserGroup.objects.get(id=response.data["id"])
@@ -155,8 +170,8 @@ class TestCreateUserGroup:
         self, api_client: APIClient, usergroup_payload
     ) -> None:
         user = baker.make(User, pk=1)
-        members_ids = [member.pk for member in baker.make(User, _quantity=5)]
         api_client.force_authenticate(user)
+        members_ids = [member.pk for member in baker.make(User, _quantity=5)]
         usergroup_payload["members"] = members_ids
 
         response = api_client.post(
@@ -176,8 +191,8 @@ class TestCreateUserGroup:
         self, api_client: APIClient, usergroup_payload
     ) -> None:
         user = baker.make(User, pk=1)
-        members_ids = [member.pk for member in baker.make(User, _quantity=5)]
         api_client.force_authenticate(user)
+        members_ids = [member.pk for member in baker.make(User, _quantity=5)]
         usergroup_payload["administrators"] = members_ids
 
         response = api_client.post(
@@ -196,15 +211,18 @@ class TestCreateUserGroup:
 
 @pytest.mark.django_db
 class TestRetrieveUserGroup:
-    def test_get_existing_user_group(self, api_client: APIClient) -> None:
+    def test_get_current_user_existing_user_group(
+        self, api_client: APIClient
+    ) -> None:
         group_admin = baker.make(User, pk=1)
-        member_one = baker.make(User, pk=2)
-        member_two = baker.make(User, pk=3)
         api_client.force_authenticate(group_admin)
+        members_set = baker.prepare(User, _quantity=5)
+        members_set.append(group_admin)
+
         group = baker.make(
             UserGroup,
             administrators=[group_admin],
-            members=[member_one, member_two, group_admin],
+            members=members_set,
         )
 
         response = api_client.get(
@@ -216,10 +234,11 @@ class TestRetrieveUserGroup:
         assert response.data["description"] == group.description
         assert group_admin.pk in response.data["administrators"]
         assert group_admin.pk in response.data["members"]
-        assert member_two.pk in response.data["members"]
-        assert member_one.pk in response.data["members"]
+        assert len(response.data["members"]) == 6
 
-    def test_get_non_existing_user_group(self, api_client: APIClient) -> None:
+    def test_get_current_user_non_existing_user_group(
+        self, api_client: APIClient
+    ) -> None:
         group_admin = baker.make(User, pk=1)
         api_client.force_authenticate(group_admin)
 
@@ -229,7 +248,7 @@ class TestRetrieveUserGroup:
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
-    def test_get_other_users_groups(self, api_client: APIClient) -> None:
+    def test_get_other_users_user_groups(self, api_client: APIClient) -> None:
         group_admin = baker.make(User, pk=1)
         api_client.force_authenticate(group_admin)
 
@@ -239,13 +258,14 @@ class TestRetrieveUserGroup:
 
     def test_get_deleted_user_group(self, api_client: APIClient) -> None:
         group_admin = baker.make(User, pk=1)
-        member_one = baker.make(User, pk=2)
-        member_two = baker.make(User, pk=3)
         api_client.force_authenticate(group_admin)
+        members_set = baker.prepare(User, _quantity=5)
+        members_set.append(group_admin)
+
         group = baker.make(
             UserGroup,
             administrators=[group_admin],
-            members=[member_one, member_two, group_admin],
+            members=members_set,
             is_deleted=True,
         )
 
@@ -255,20 +275,91 @@ class TestRetrieveUserGroup:
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
-    # TODO fix it
-    def test_not_active_user_group(self, api_client: APIClient) -> None:
-        group_admin = baker.make(User, pk=1, is_active=False)
-        member_one = baker.make(User, pk=2)
-        member_two = baker.make(User, pk=3)
+
+@pytest.mark.django_db
+class TestListUserGroup:
+    def test_get_current_user_groups(self, api_client: APIClient) -> None:
+        group_admin = baker.make(User, pk=1)
         api_client.force_authenticate(group_admin)
-        group = baker.make(
+        members_set = baker.prepare(User, _quantity=5)
+        members_set.append(group_admin)
+
+        baker.make(
             UserGroup,
             administrators=[group_admin],
-            members=[member_one, member_two, group_admin],
+            members=members_set,
+            _quantity=10,
+            is_deleted=False,
         )
 
         response = api_client.get(
-            f"/users/{group_admin.pk}/groups/{group.pk}/", format="json"
+            f"/users/{group_admin.pk}/groups/", format="json"
         )
 
-        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.status_code == status.HTTP_200_OK
+
+        groups = response.data["results"]
+        # check first and last group members count
+        assert response.data["count"] == 10
+        assert len(groups[0]["members"]) == 6
+        assert len(groups[-1]["members"]) == 6
+        assert group_admin.pk in groups[0]["members"]
+        assert group_admin.pk in groups[0]["administrators"]
+
+    def test_get_current_user_groups_with_deleted_groups(
+        self, api_client: APIClient
+    ) -> None:
+        group_admin = baker.make(User, pk=1)
+        api_client.force_authenticate(group_admin)
+        members_set = baker.prepare(User, _quantity=5)
+        members_set.append(group_admin)
+
+        baker.make(
+            UserGroup,
+            administrators=[group_admin],
+            members=members_set,
+            _quantity=5,
+            is_deleted=False,
+        )
+        baker.make(
+            UserGroup,
+            administrators=[group_admin],
+            members=members_set,
+            _quantity=5,
+            is_deleted=True,
+        )
+
+        response = api_client.get(
+            f"/users/{group_admin.pk}/groups/", format="json"
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+
+        groups = response.data["results"]
+        # check first and last group members count
+        assert response.data["count"] == 5
+        assert len(groups[0]["members"]) == 6
+        assert len(groups[-1]["members"]) == 6
+        assert group_admin.pk in groups[0]["members"]
+        assert group_admin.pk in groups[0]["administrators"]
+
+    def test_get_currrent_user_groups_user_without_groups(
+        self, api_client: APIClient
+    ) -> None:
+        group_admin = baker.make(User, pk=1)
+        api_client.force_authenticate(group_admin)
+
+        response = api_client.get(
+            f"/users/{group_admin.pk}/groups/", format="json"
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data["count"] == 0
+
+    def test_get_other_users_user_groups(self, api_client: APIClient) -> None:
+        group_admin = baker.make(User, pk=1)
+        api_client.force_authenticate(group_admin)
+
+        response = api_client.get("/users/2/groups/", format="json")
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
