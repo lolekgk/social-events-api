@@ -11,7 +11,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         if not (
             request.user.is_authenticated and request.user == self.instance
         ):
-            # TODO add group_member, and group_admin
+            # TODO move this logic to a view and add group_member, and group_admin
             self.fields.pop("email")
 
     class Meta:

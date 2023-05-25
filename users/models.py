@@ -14,7 +14,7 @@ class User(AbstractUser):
     )
 
     def __str__(self) -> str:
-        return f"{self.first_name} {self.last_name} ({self.username})"
+        return self.username
 
     def delete(self, *args, **kwargs):
         self.is_active = False

@@ -17,13 +17,14 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     GET (list): Retrieve a list of active users.
 
-    GET(retrieve): Retrieve user's profile.
+    GET(retrieve): Retrieve a specific user's profile by their ID.
 
-    PUT/PATCH: Update current user's profile.
+    PUT/PATCH: Update current user's profile. Users can only update their own profiles.
 
-    DELETE: Mark current user's profile as not active.
+    DELETE: Mark current user's profile as not active. Users can only delete their own profiles.
     """
 
+    http_method_names = ["get", "put", "patch", "delete", "options", "head"]
     permission_classes = [UserOwnProfileOrReadOnly]
     pagination_class = DefaultPagination
     serializer_class = UserProfileSerializer
@@ -37,16 +38,48 @@ class UserViewSet(viewsets.ModelViewSet):
 
 @extend_schema(tags=["user groups"])
 class UserGroupViewSet(viewsets.ModelViewSet):
+    """
+    GET (list): Retrieve a list of User Groups the current user is a member of, excluding deleted groups.
+
+    GET (retrieve): Retrieve a specific User Group by its ID, along with its members and administrators.
+
+    POST (create): Create a new User Group. The current user will be automatically added as a member and administrator.
+
+    PUT/PATCH (update): Update the details of a User Group, such as its name or description. Only administrators can update a User Group.
+
+    DELETE: Soft-delete a User Group, marking it as deleted. Only administrators can delete a User Group.
+    """
 
     permission_classes = [IsAuthenticated, UserGroupPermission]
     pagination_class = DefaultPagination
     serializer_class = UserGroupSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    search_fields = ["name", "members__username"]
+    ordering_fields = ["name"]
 
     def create(self, request: Request, *args, **kwargs) -> Response:
-        request.data["members"].append(request.user.id)
-        request.data["administrators"].append(request.user.id)
+        members_ids = request.data["members"]
+        administrators_ids = request.data["administrators"]
+
+        active_members_ids = list(
+            User.objects.filter(
+                id__in=members_ids, is_active=True
+            ).values_list("id", flat=True)
+        )
+        active_administrators_ids = list(
+            User.objects.filter(
+                id__in=administrators_ids, is_active=True
+            ).values_list("id", flat=True)
+        )
+
+        active_members_ids.append(request.user.id)
+        active_administrators_ids.append(request.user.id)
+        request.data["members"] = active_members_ids
+        request.data["administrators"] = active_administrators_ids
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(
