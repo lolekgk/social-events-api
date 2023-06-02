@@ -5,7 +5,6 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from messagebox.models import Message
-from messagebox.permissions import MessageSenderReceiverPermission
 
 User = get_user_model()
 
@@ -86,7 +85,7 @@ def update_message_payload(test_receiver, test_sender):
 
 @pytest.mark.django_db
 class TestListMessage:
-    def test_get_messages_as_sender(
+    def test_get_all_messages_as_sender(
         self, api_client: APIClient, create_messages, test_sender
     ) -> None:
         api_client.force_authenticate(test_sender)
@@ -95,6 +94,30 @@ class TestListMessage:
 
         assert response.status_code == status.HTTP_200_OK
         assert response.data["count"] == 10
+
+    def test_get_sent_messages_as_sender(
+        self, api_client: APIClient, create_messages, test_sender
+    ) -> None:
+        api_client.force_authenticate(test_sender)
+
+        response = api_client.get(
+            "/messagebox/?msg_direction=sent", format="json"
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data["count"] == 10
+
+    def test_get_received_messages_as_sender(
+        self, api_client: APIClient, create_messages, test_sender
+    ) -> None:
+        api_client.force_authenticate(test_sender)
+
+        response = api_client.get(
+            "/messagebox/?msg_direction=received", format="json"
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data["count"] == 0
 
     def test_get_messages_as_receiver(
         self, api_client: APIClient, create_messages, test_receiver
@@ -272,7 +295,7 @@ class TestCreateMessage:
 
         invalid_payload = {
             "sender": test_sender.pk,
-            "receiver": 99,
+            "receiver": 999999,
             "content": "test_content",
         }
         response = api_client.post(
