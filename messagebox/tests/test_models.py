@@ -9,13 +9,6 @@ User = get_user_model()
 
 
 @pytest.fixture
-def test_sender():
-    sender = baker.make(User, username="test_sender")
-    yield sender
-    del sender
-
-
-@pytest.fixture
 def test_private_message(test_sender):
     receiver = baker.make(User, username="test_receiver")
 

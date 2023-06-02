@@ -32,7 +32,8 @@ class MessageContentUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Message
-        fields = ["content"]
+        fields = ["id", "content", "sender", "receiver"]
+        read_only_fields = ["id", "receiver", "sender"]
 
 
 class MessageThreadSerializer(serializers.ModelSerializer):
