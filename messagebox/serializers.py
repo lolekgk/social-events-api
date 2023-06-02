@@ -32,7 +32,8 @@ class MessageContentUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Message
-        fields = ["content"]
+        fields = ["id", "content", "sender", "receiver"]
+        read_only_fields = ["id", "receiver", "sender"]
 
 
 class MessageThreadSerializer(serializers.ModelSerializer):
@@ -55,4 +56,5 @@ class MessageThreadParticipantsUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MessageThread
-        fields = ["participants"]
+        fields = ["id", "participants", "name"]
+        read_only_fields = ["id"]

@@ -414,14 +414,14 @@ class TestUpdateUserGroup:
 
         assert response.status_code == status.HTTP_200_OK
 
-        usergroup = UserGroup.objects.get(id=response.data["id"])
+        updated_usergroup = UserGroup.objects.get(id=response.data["id"])
 
-        assert usergroup.administrators.count() == 1
-        assert group_admin in usergroup.administrators.all()
+        assert updated_usergroup.administrators.count() == 1
+        assert group_admin in updated_usergroup.administrators.all()
         assert usergroup.members.count() == 1
-        assert group_admin in usergroup.members.all()
-        assert usergroup.name == "updated_test"
-        assert usergroup.description == "updated_test"
+        assert group_admin in updated_usergroup.members.all()
+        assert updated_usergroup.name == "updated_test"
+        assert updated_usergroup.description == "updated_test"
 
     def test_update_other_users_usergroup(
         self, api_client: APIClient, group_admin, usergroup
