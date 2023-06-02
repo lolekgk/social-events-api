@@ -31,9 +31,7 @@ class UserViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     search_fields = ["first_name", "last_name", "email"]
     ordering_fields = ["first_name", "last_name"]
-
-    def get_queryset(self):
-        return User.objects.filter(is_active=True)
+    queryset = User.objects.filter(is_active=True)
 
 
 @extend_schema(tags=["user groups"])
@@ -61,7 +59,7 @@ class UserGroupViewSet(viewsets.ModelViewSet):
         members_ids = request.data["members"]
         administrators_ids = request.data["administrators"]
 
-        active_members_ids = list(
+        active_members_ids = list(  # TODO
             User.objects.filter(
                 id__in=members_ids, is_active=True
             ).values_list("id", flat=True)
@@ -87,7 +85,7 @@ class UserGroupViewSet(viewsets.ModelViewSet):
         )
 
     def get_queryset(self):
-        filtered_users = User.objects.exclude(is_active=False)
+        filtered_users = User.objects.filter(is_active=True)
         return (
             UserGroup.objects.filter(is_deleted=False)
             .filter(members=self.request.user)

@@ -18,11 +18,13 @@ def user_update_payload_short():
 
 @pytest.fixture
 def user_update_payload():
+    friend_one = baker.make(User)
+    friend_two = baker.make(User)
     payload = {
         "first_name": "test",
         "last_name": "test",
         "birth_date": "1990-01-01",
-        "friends": [2, 3],
+        "friends": [friend_one.pk, friend_two.pk],
     }
     yield payload
     del payload
@@ -42,7 +44,7 @@ class TestListUser:
 @pytest.mark.django_db
 class TestRetrieveUser:
     def test_get_user_as_anonymous_user(self, api_client: APIClient) -> None:
-        user = baker.make(User, pk=1)
+        user = baker.make(User)
 
         response = api_client.get(f"/users/{user.pk}/", format="json")
 
@@ -50,7 +52,7 @@ class TestRetrieveUser:
         assert response.data.get("email") is None
 
     def test_get_user_own_profile(self, api_client: APIClient) -> None:
-        user = baker.make(User, pk=1)
+        user = baker.make(User)
         api_client.force_authenticate(user)
 
         response = api_client.get(f"/users/{user.pk}/", format="json")
@@ -70,7 +72,7 @@ class TestUpdateUser:
     def test_update_user_as_anonymous_user(
         self, api_client: APIClient, user_update_payload_short
     ) -> None:
-        user = baker.make(User, pk=1)
+        user = baker.make(User)
 
         response = api_client.patch(
             f"/users/{user.pk}/", data=user_update_payload_short, format="json"
@@ -81,9 +83,9 @@ class TestUpdateUser:
     def test_update_other_user(
         self, api_client: APIClient, user_update_payload_short
     ) -> None:
-        current_user = baker.make(User, pk=2)
+        current_user = baker.make(User)
         api_client.force_authenticate(current_user)
-        user_to_update = baker.make(User, pk=1)
+        user_to_update = baker.make(User)
 
         response = api_client.patch(
             f"/users/{user_to_update.pk}/",
@@ -96,8 +98,9 @@ class TestUpdateUser:
     def test_update_user_own_profile_with_non_existing_friends(
         self, api_client: APIClient, user_update_payload
     ) -> None:
-        current_user = baker.make(User, pk=1)
+        current_user = baker.make(User)
         api_client.force_authenticate(current_user)
+        user_update_payload["friends"] = [9999, 99999]
 
         response = api_client.put(
             f"/users/{current_user.pk}/",
@@ -110,7 +113,7 @@ class TestUpdateUser:
     def test_update_user_own_profile_short(
         self, api_client: APIClient, user_update_payload_short
     ) -> None:
-        user = baker.make(User, pk=1)
+        user = baker.make(User)
         api_client.force_authenticate(user)
 
         response = api_client.patch(
@@ -126,10 +129,8 @@ class TestUpdateUser:
     def test_update_user_own_profile(
         self, api_client: APIClient, user_update_payload
     ) -> None:
-        user = baker.make(User, pk=1)
+        user = baker.make(User)
         api_client.force_authenticate(user)
-        friend_one = baker.make(User, pk=2)
-        friend_two = baker.make(User, pk=3)
 
         response = api_client.put(
             f"/users/{user.pk}/", data=user_update_payload, format="json"
@@ -141,7 +142,7 @@ class TestUpdateUser:
         assert response.data["email"] == user.email
         assert response.data["username"] == user.username
         assert response.data["birth_date"] == "1990-01-01"
-        assert friend_one.pk in response.data["friends"]
+        assert len(response.data["friends"]) == 2
 
 
 @pytest.mark.django_db
@@ -149,7 +150,7 @@ class TestDeleteUser:
     def test_delete_user_as_anonymous_user(
         self, api_client: APIClient
     ) -> None:
-        user = baker.make(User, pk=1)
+        user = baker.make(User)
 
         response = api_client.delete(f"/users/{user.pk}/", format="json")
 
@@ -167,7 +168,7 @@ class TestDeleteUser:
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_delete_user_own_profile(self, api_client: APIClient) -> None:
-        user = baker.make(User, pk=1)
+        user = baker.make(User)
         api_client.force_authenticate(user)
 
         response = api_client.delete(f"/users/{user.pk}/", format="json")
